@@ -8,103 +8,135 @@
 import SwiftUI
 
 struct EmergencyView: View {
-    var emergency: Emergency // Recebe o objeto completo
+    var emergency: Emergency
     @State private var currentStepIndex = 0
+    
+    @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
-        ZStack {
-            // Fundo dinâmico baseado na cor da emergência
-            LinearGradient(
-                stops: [
-                    .init(color: emergency.color.opacity(0.4), location: 0),
-                    .init(color: .black, location: 0.6)
-                ],
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .ignoresSafeArea()
-
-            VStack(spacing: 0) {
-                // HEADER COM A IMAGEM DA EMERGÊNCIA
-                VStack(spacing: 15) {
-                    Image(systemName: emergency.image)
-                        .font(.system(size: 60))
-                        .foregroundStyle(emergency.color)
-                        .shadow(color: emergency.color.opacity(0.5), radius: 10)
+            ScrollView {
+                VStack(spacing: 0) {
+                    VStack(spacing: 15) {
+                        Image(systemName: emergency.image)
+                            .font(.system(size: 60))
+                            .foregroundStyle(emergency.color)
+                            .shadow(color: emergency.color.opacity(0.5), radius: 10)
+                    }
+                    .padding(.top, 20)
+                    .padding(.bottom, 20)
                     
-                    Text(emergency.title)
-                        .font(.largeTitle.bold())
-                        .foregroundStyle(.white)
-                }
-                .padding(.top, 50)
-                .padding(.bottom, 30)
-
-                // LISTA DE PASSOS (STEPPER)
-                ScrollView {
                     VStack(alignment: .leading, spacing: 20) {
                         ForEach(Array(emergency.steps.enumerated()), id: \.element.id) { index, step in
-                            HStack(alignment: .top, spacing: 15) {
-                                // Indicador Visual
-                                stepIndicator(index: index)
-
-                                // Card do Passo (Suas propriedades: title, stepDescription, image)
-                                VStack(alignment: .leading, spacing: 8) {
-                                    Label(step.title, systemImage: step.image)
-                                        .font(.headline)
-                                        .foregroundStyle(index == currentStepIndex ? emergency.color : .primary)
-                                    
-                                    Text(step.stepDescription)
-                                        .font(.subheadline)
-                                        .foregroundStyle(.secondary)
-                                    
-                                    // Se houver animação específica, você pode colocar um placeholder aqui
-                                    if step.specificAnimation {
-                                        capsuleAnimationHint()
-                                    }
-                                }
-                                .padding()
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .background(.ultraThinMaterial)
-                                .cornerRadius(15)
-                                .overlay(
-                                    RoundedRectangle(cornerRadius: 15)
-                                        .stroke(index == currentStepIndex ? emergency.color.opacity(0.5) : .clear, lineWidth: 1)
-                                )
-                                .onTapGesture {
-                                    withAnimation(.spring()) { currentStepIndex = index }
-                                }
-                            }
+                            cardEmergencyStep(step: step, index: index)
                         }
                     }
                     .padding()
+                    
                 }
+            }
+            .background {
+                ZStack {
+                    Color(.systemGroupedBackground)
+                    LinearGradient(
+                        stops: [
+                            .init(color: emergency.color.opacity(0.4), location: 0),
+                            .init(color: .clear, location: 0.6)
+                        ],
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                }
+                .ignoresSafeArea()
+            }
+//            .toolbarVisibility(.hidden, for: .tabBar)
+            .navigationTitle(emergency.title)
+            .navigationBarTitleDisplayMode(.inline)
+            .safeAreaInset(edge: .bottom) {
+                Button{
+                    if currentStepIndex < emergency.steps.count - 1 {
+                        withAnimation {
+                            currentStepIndex += 1
+                        }
+                    }
+                }label:{
+                    Text("Next Step")
+                        .font(.headline)
+                        .padding(.vertical, 4)
+                        .padding(.horizontal)
+                }
+                .tint(Color("AlertColor2"))
+                .buttonStyle(.glassProminent)
+                .padding()
+            }
+    }
+    
+    func cardEmergencyStep(step: EmergencyStep, index: Int) -> some View {
+        HStack(alignment: .top, spacing: 15) {
+            
+            VStack(alignment: .leading, spacing: 8) {
+                if emergency.color == Color("AnimalHit") && colorScheme == .dark {
+                    Text(step.title)
+                        .font(.headline)
+                        .foregroundStyle(index == currentStepIndex ? .black : .primary)
+                }else {
+                    Text(step.title)
+                        .font(.headline)
+                        .foregroundStyle(index == currentStepIndex ? .white : .primary)
+                }
+                
+                if index == currentStepIndex {
+                    if emergency.color == Color("AnimalHit") && colorScheme == .dark {
+                        Text(step.stepDescription)
+                            .font(.subheadline)
+                            .foregroundStyle(.black)
+                    } else {
+                        Text(step.stepDescription)
+                            .font(.subheadline)
+                            .foregroundStyle(.white)
+                    }
+                }
+                
+            }
+            .padding()
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background{
+                ZStack {
+                    Rectangle()
+                        .fill(.ultraThinMaterial)
+                    if index == currentStepIndex {
+                        Rectangle()
+                            .fill(emergency.color)
+                    }
+                    else {
+                        Rectangle()
+                            .fill(Color(.secondarySystemGroupedBackground))
+                            .opacity(colorScheme == .dark ? 0.5: 1)
+                    }
+                }
+            }
+            .cornerRadius(15)
+            .overlay(
+                RoundedRectangle(cornerRadius: 15)
+                    .stroke(index == currentStepIndex ? .white.opacity(0.5) : .clear, lineWidth: 0.5)
+            )
+            .onTapGesture {
+                withAnimation{ currentStepIndex = index }
             }
         }
     }
 
-    // Função auxiliar para o número do passo
-    @ViewBuilder
-    func stepIndicator(index: Int) -> some View {
-        VStack {
-            Circle()
-                .fill(index <= currentStepIndex ? emergency.color : Color.gray.opacity(0.3))
-                .frame(width: 28, height: 28)
-                .overlay(Text("\(index + 1)").font(.caption2).bold().foregroundStyle(.white))
-            
-            if index < emergency.steps.count - 1 {
-                Rectangle()
-                    .fill(index < currentStepIndex ? emergency.color : Color.gray.opacity(0.3))
-                    .frame(width: 2, height: 60)
-            }
-        }
-    }
-    
-    @ViewBuilder
-    func capsuleAnimationHint() -> some View {
-        Text("ANIMAÇÃO ATIVA")
-            .font(.system(size: 8, weight: .bold))
-            .padding(4)
-            .background(emergency.color.opacity(0.2))
-            .cornerRadius(4)
-    }
+//    func stepIndicator(index: Int) -> some View {
+//        VStack {
+//            Circle()
+//                .fill(index <= currentStepIndex ? emergency.color : Color.gray.opacity(0.3))
+//                .frame(width: 28, height: 28)
+//                .overlay(Text("\(index + 1)").font(.caption2).bold().foregroundStyle(.white))
+//            
+//            if index < emergency.steps.count - 1 {
+//                Rectangle()
+//                    .fill(index < currentStepIndex ? emergency.color : Color.gray.opacity(0.3))
+//                    .frame(width: 2, height: 60)
+//            }
+//        }
+//    }
 }

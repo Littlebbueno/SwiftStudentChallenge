@@ -7,80 +7,108 @@
 
 import SwiftUI
 
-@available(iOS 17.0, *)
 struct TravelView: View {
     @State var immediateEmergencies: [Emergency]
-
     @State var roadWeatherEmergencies: [Emergency]
-
     @State var vehicleEmergencies: [Emergency]
     
     let colorCardEmergencyContacts = Color("AlertColor")
-    
     @State var showDescriptionApp: Bool = false
+    
+    @Environment(\.colorScheme) var colorScheme
+    
+    // Search
+    @State var searchText: String = ""
+    var filteredImmediate: [Emergency] {
+        if searchText.isEmpty {
+            return immediateEmergencies
+        } else {
+            return immediateEmergencies.filter { $0.title.localizedCaseInsensitiveContains(searchText) }
+        }
+    }
+    var filteredRoadWeather: [Emergency] {
+        if searchText.isEmpty {
+            return roadWeatherEmergencies
+        } else {
+            return roadWeatherEmergencies.filter { $0.title.localizedCaseInsensitiveContains(searchText) }
+        }
+    }
+    var filteredVehicle: [Emergency] {
+        if searchText.isEmpty {
+            return vehicleEmergencies
+        } else {
+            return vehicleEmergencies.filter { $0.title.localizedCaseInsensitiveContains(searchText) }
+        }
+    }
+    
+    @State private var animateGradient = false
     
     var body: some View {
         ZStack {
             Color(.systemGroupedBackground)
                 .ignoresSafeArea()
-            //MARK: CORRIGIR PARA TIRAR OFFSET
-//            LinearGradient(
-//                gradient: Gradient(colors: [.accentColor, .clear]),
-//                startPoint: .top,
-//                endPoint: .bottom
-//            )
-//            .opacity(0.7)
-//            .offset(y: -300)
-            Image("imageExample2")
-                .resizable()
-                .containerRelativeFrame(.horizontal) { length, axis in
-                    length * 1
+            VStack {
+                LinearGradient(
+                    colors: [Color.orange, Color("FlatTire"), .clear],
+                    startPoint: animateGradient ? .topLeading : .topTrailing,
+                    endPoint: .bottom
+                )
+                .onAppear {
+                    withAnimation(.linear(duration: 6.0).repeatForever(autoreverses: true)) {
+                        animateGradient.toggle()
+                    }
                 }
-                .clipped()
-                .ignoresSafeArea()
-                .opacity(0.27)
+                .offset(y: -300)
+                .opacity(colorScheme == .dark ? 0.6 : 0.6)
+                Spacer()
+            }
+//            Image("imageExample2")
+//                .resizable()
+//                .containerRelativeFrame(.horizontal) { length, axis in
+//                    length * 1
+//                }
+//                .clipped()
+//                .ignoresSafeArea()
+//                .opacity(0.27)
                 
             ScrollView{
                 VStack(alignment: .leading){
                     initialCards
                         .padding(.horizontal)
                     HStack {
-                        Image(systemName: "exclamationmark.triangle.fill")
-                            .foregroundStyle(Color.red)
                         Text("Immediate Emergencies")
-                            .font(.headline)
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
                             .foregroundStyle(Color.secondary)
                         Spacer()
                     }
                     .padding(.horizontal, 22)
                     .padding(.top, 8)
-                    emergencies(items: self.listExamplesHighways)
+                    emergencies(items: filteredImmediate )
                     HStack {
-                        Image(systemName: "car.side.front.open.fill")
-                            .foregroundStyle(Color.indigo)
                         Text("Vehicle Emergencies")
-                            .font(.headline)
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
                             .foregroundStyle(Color.secondary)
                         Spacer()
                     }
                     .padding(.horizontal, 22)
                     .padding(.top, 8)
-                    emergencies(items: self.listExamplesCarFailures)
+                    emergencies(items: filteredVehicle)
                     HStack {
-                        Image(systemName: "cloud.rain.fill")
-                            .foregroundStyle(Color.blue)
                         Text("Road & Weather Emergencies")
-                            .font(.headline)
+                            .font(.subheadline)
+                            .fontWeight(.semibold)
                             .foregroundStyle(Color.secondary)
                         Spacer()
                     }
                     .padding(.horizontal, 22)
                     .padding(.top, 8)
-                    emergencies(items: self.listExamplesCarFailures)
+                    emergencies(items: filteredRoadWeather)
                     
                 }
             }
-            .searchable(text: .constant(""),placement: .automatic , prompt: "Search")
+            .searchable(text: self.$searchText ,placement: .automatic , prompt: "Search")
             .navigationTitle("Travel")
             .toolbar {
                 ToolbarItem(placement: .primaryAction){
@@ -104,81 +132,79 @@ struct TravelView: View {
             NavigationLink(
                 destination: EmergencyContactsView()
             ){
-                ZStack {
-                    Rectangle()
-                        .containerRelativeFrame(.horizontal) { length, axis in
-                            length * 0.45
-                        }
-                        .cornerRadius(20)
-                        .foregroundStyle(colorCardEmergencyContacts.gradient)
-                    VStack(alignment: .leading, spacing: 10) {
-                        // Opções: person.crop.circle.badge.exclamationmark
-                        Image(systemName: "phone.fill")
-                            .font(.title)
-                            .foregroundColor(.white)
+                HStack(alignment: .center, spacing: 10) {
+                    // Opções: person.crop.circle.badge.exclamationmark
+                    Image(systemName: "person.crop.circle.badge.exclamationmark")
+                        .font(.title)
+                        .foregroundColor(.white)
+                        .padding(.leading)
+                    VStack(alignment: .leading, spacing: 2) {
                         Text("Emergency Contacts")
                             .font(.title3)
                             .fontWeight(.bold)
                             .foregroundStyle(.white)
                             .multilineTextAlignment(.leading)
                             .dynamicTypeSize(...DynamicTypeSize.large)
-                        
+                        Text("Add your emergency contacts here for quick access.")
+                            .font(.system(size: 11))
+                            .foregroundStyle(.white)
+                            .dynamicTypeSize(...DynamicTypeSize.large)
                     }
-                    .padding(8)
-                    .padding(.horizontal, 4)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
+                    Spacer()
                     
                 }
-            }
-            NavigationLink(
-                destination: ItemsTravelView()
-            ){
-                ZStack {
-                    Rectangle()
-                        .containerRelativeFrame(.horizontal) { length, axis in
-                            length * 0.45
-                        }
-                        .cornerRadius(20)
-                        .foregroundStyle(colorCardItems.gradient)
-                    VStack(alignment: .leading, spacing: 10) {
-                        // Opções: suitcase.rolling.fill, backpack.fill
-                        Image(systemName: "suitcase.fill")
-                            .font(.title)
-                            .foregroundColor(.white)
-                        Text("Items to next travel")
-                            .foregroundStyle(.white)
-                            .font(.title3)
-                            .fontWeight(.bold)
-                            .foregroundStyle(.white)
-                            .multilineTextAlignment(.leading)
-                            .dynamicTypeSize(...DynamicTypeSize.large)
-                            
-                    }
-                    .padding(8)
-                    .padding(.horizontal, 4)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
+                .containerRelativeFrame(.vertical) { length, axis in
+                    length * 0.15
                 }
+                .background {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 14)
+                            .fill(.ultraThinMaterial)
+                        Rectangle()
+                            .cornerRadius(17)
+                            .foregroundStyle(colorCardEmergencyContacts.gradient)
+                            .opacity(0.8)
+                    }
+                }
+                    
             }
-        }
-        .containerRelativeFrame(.vertical) { length, axis in
-            length * 0.20
         }
     }
     
     func emergencies(items: [Emergency]) -> some View {
-        VStack(spacing: 15) {
-            ForEach(items, id: \.self) { emergency in
+        VStack(spacing: 12) {
+            ForEach(Array(items.enumerated()), id: \.element.id) { index, emergency in
                 NavigationLink(destination: EmergencyView(emergency: emergency)){
-                    HStack {
-                        Image(systemName: "arrow.2.circlepath")
-                            .foregroundColor(Color.secondary)
-                        Text("\(example)")
-                            .font(.headline)
-                            .foregroundStyle(Color.primary)
-                        Spacer()
-                        Image(systemName: "chevron.right")
-                            .foregroundStyle(Color.secondary)
-                        
+                    VStack {
+                        HStack(alignment: .center, spacing: 12) {
+                            if index < items.count - 1 {
+                                Image(systemName: emergency.image)
+                                    .frame(width: 18)
+                                    .foregroundColor(emergency.color)
+                                    .offset(y: -5)
+                            }
+                            else{
+                                Image(systemName: emergency.image)
+                                    .frame(width: 18)
+                                    .foregroundColor(emergency.color)
+                            }
+                            VStack {
+                                HStack {
+                                    Text(emergency.title)
+                                        .font(.body)
+                                        .fontWeight(.medium)
+                                        .foregroundStyle(Color.primary)
+                                    Spacer()
+                                    Image(systemName: "chevron.right")
+                                        .font(.caption)
+                                        .foregroundStyle(Color.secondary)
+                                }
+                                if index < items.count - 1 {
+                                    Divider()
+                                }
+                            }
+                            
+                        }
                     }
                 }
             }
@@ -186,10 +212,16 @@ struct TravelView: View {
         }
         .padding()
         .background{
-            Rectangle()
-                .foregroundColor(Color(.secondarySystemGroupedBackground))
-                .cornerRadius(14)
-                .padding(.horizontal)
+            ZStack {
+                RoundedRectangle(cornerRadius: 14)
+                    .fill(.ultraThinMaterial)
+                Rectangle()
+                    .foregroundColor(Color(.secondarySystemGroupedBackground))
+                    .cornerRadius(14)
+                    .opacity(colorScheme == .dark ? 0.4 : 0.8)
+            }
+            .padding(.horizontal)
+
         }
     }
 }

@@ -62,7 +62,7 @@ class EmergencyManager {
             EmergencyStep(title: "D/E: Final Assessment", image: "eye.fill", stepDescription: "Check for responsiveness and hidden injuries. Monitor breathing until help arrives.", specificAnimation: false),
             EmergencyStep(title: "What NOT to do", image: "xmark.octagon.fill", stepDescription: "Do not move the victim. Do not give food or water. Do not leave them alone.", specificAnimation: false)
         ]
-        self.immediateEmergencies = [Emergency(title: "Severe Accident", image: "exclamationmark.octagon.fill", steps: medicalSteps, category: 1, color: Color("SevereAccident")), Emergency(title: "Animal Hit", image: "pawprint.fill", steps: medicalSteps, category: 1, color: Color("AnimalHit")), Emergency(title: "VehicleFire", image: "flame.fill", steps: medicalSteps, category: 1, color: Color("VehicleFire")), Emergency(title: "Medical", image: "cross.case.fill", steps: medicalSteps, category: 1, color: Color("Medical"))]
+        self.immediateEmergencies = [Emergency(title: "Severe Accident", image: "exclamationmark.octagon.fill", steps: medicalSteps, category: 1, color: Color("SevereAccident")), Emergency(title: "Animal Hit", image: "pawprint.fill", steps: medicalSteps, category: 1, color: Color("AnimalHit")), Emergency(title: "Vehicle Fire", image: "flame.fill", steps: medicalSteps, category: 1, color: Color("VehicleFire")), Emergency(title: "Medical", image: "cross.case.fill", steps: medicalSteps, category: 1, color: Color("Medical"))]
         self.vehicleEmergencies = [Emergency(title: "Flat Tire", image: "tire", steps: medicalSteps, category: 2, color: Color("FlatTire"))]
         self.roadWeatherEmergencies = []
         

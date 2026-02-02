@@ -20,7 +20,7 @@ struct MyApp: App {
                         Label("Attention", systemImage: "road.lanes.curved.left")
                     }
                 NavigationStack {
-                    Resources()
+                    ResourcesView()
                 }
                 .tabItem {
                     Label("Resources", systemImage: "book.pages.fill")
