@@ -38,6 +38,7 @@ struct AttentionVisionView: View {
                 VStack(spacing: 40) {
                     statusIndicator
                     informativePart
+                        .padding()
                     Spacer()
                     if self.assistActive {
                         buttonCloseAssistant
@@ -87,14 +88,14 @@ struct AttentionVisionView: View {
                     .font(.system(size: 24, weight: .bold))
                     .foregroundColor(Color("DarkBrown"))
                 
-                Text("Orientações para posicionamento do celular")
+                Text("For best results, securely mount your phone and keep your face centered. Ensure there is adequate lighting for face detection.")
                     .font(.caption)
             }else {
-                Text(eyeTracker.eyesClosed ? "OLHOS FECHADOS" : "OLHOS ABERTOS")
+                Text(eyeTracker.eyesClosed ? "EYES CLOSED" : "EYES OPEN")
                     .font(.system(size: 24, weight: .bold))
                     .foregroundColor(eyeTracker.eyesClosed ? .red : Color("DarkGreen"))
                 
-                Text("Mantenha o dispositivo fixo no painel")
+                Text("Keep the device securely in place on the dashboard.")
                     .font(.caption)
             }
         }

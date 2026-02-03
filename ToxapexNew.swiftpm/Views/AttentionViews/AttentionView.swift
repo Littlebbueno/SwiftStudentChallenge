@@ -8,6 +8,7 @@ import SwiftUI
 
 struct AttentionView: View {
     @State var attentionMode: Bool = false
+    @State var editedMode: Bool = false
     // false == Vision, true == ARKit
     @Environment(\.colorScheme) var colorScheme
     
@@ -42,13 +43,21 @@ struct AttentionView: View {
                 }else{
                     AttentionVisionView()
                 }
+                VStack {
+                    Text(attentionMode ? "ARKit Mode" : "Vision Mode")
+                        .font(.headline)
+                        .foregroundStyle(.white)
+                        .offset(y: 30)
+                }
             }
+            
         }
         .toolbar{
             ToolbarItem {
                 if self.editing == false {
                     Button{
                         self.editing = true
+                        self.editedMode = self.attentionMode
                     }label:{
                         HStack(spacing: 4) {
                             Image(systemName: "pencil")
@@ -66,11 +75,11 @@ struct AttentionView: View {
     func editingView() -> some View {
         VStack(spacing: 12) {
             Spacer()
-            Text(attentionMode ? "ARKit Mode" : "Vision Mode")
+            Text(editedMode ? "ARKit Mode" : "Vision Mode")
                 .fontWeight(.semibold)
                 .foregroundStyle(.indigo)
             Button{
-                attentionMode.toggle()
+                editedMode.toggle()
             }label:{
                 HStack {
                     Text("Change Mode")
@@ -83,6 +92,7 @@ struct AttentionView: View {
             }
             Button{
                 withAnimation {
+                    attentionMode = editedMode
                     editing = false
                 }
             }label:{
@@ -96,7 +106,6 @@ struct AttentionView: View {
             .buttonStyle(.glassProminent)
             Button{
                 withAnimation {
-                    attentionMode.toggle()
                     editing = false
                 }
             }label:{
