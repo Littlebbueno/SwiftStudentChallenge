@@ -19,8 +19,7 @@ struct EmergencyView: View {
                     VStack(spacing: 15) {
                         Image(systemName: emergency.image)
                             .font(.system(size: 60))
-                            .foregroundStyle(emergency.color)
-                            .shadow(color: emergency.color.opacity(0.5), radius: 10)
+                            .foregroundStyle(emergency.color2)
                     }
                     .padding(.top, 20)
                     .padding(.bottom, 20)
@@ -39,7 +38,7 @@ struct EmergencyView: View {
                     Color(.systemGroupedBackground)
                     LinearGradient(
                         stops: [
-                            .init(color: emergency.color.opacity(0.4), location: 0),
+                            .init(color: emergency.color2.opacity(0.4), location: 0),
                             .init(color: .clear, location: 0.6)
                         ],
                         startPoint: .top,
@@ -61,8 +60,8 @@ struct EmergencyView: View {
                 }label:{
                     Text("Next Step")
                         .font(.headline)
-                        .padding(.vertical, 4)
-                        .padding(.horizontal)
+                        .padding(.vertical, 10)
+                        .padding(.horizontal,18)
                 }
                 .tint(Color("AlertColor2"))
                 .buttonStyle(.glassProminent)
@@ -74,25 +73,72 @@ struct EmergencyView: View {
         HStack(alignment: .top, spacing: 15) {
             
             VStack(alignment: .leading, spacing: 8) {
-                if emergency.color == Color("AnimalHit") && colorScheme == .dark {
-                    Text(step.title)
-                        .font(.headline)
-                        .foregroundStyle(index == currentStepIndex ? .black : .primary)
-                }else {
+                HStack {
                     Text(step.title)
                         .font(.headline)
                         .foregroundStyle(index == currentStepIndex ? .white : .primary)
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.caption)
+                        .foregroundStyle(index == currentStepIndex ? .white :
+                                .secondary)
+                        .rotationEffect(.degrees(index == currentStepIndex ? 90 : 0))
+                        .animation(.spring(response: 0.3, dampingFraction: 0.6), value: currentStepIndex)
                 }
                 
+                
                 if index == currentStepIndex {
-                    if emergency.color == Color("AnimalHit") && colorScheme == .dark {
+                    let colorText = Color.white
+                    if step.stepDescription != "" {
                         Text(step.stepDescription)
                             .font(.subheadline)
-                            .foregroundStyle(.black)
-                    } else {
-                        Text(step.stepDescription)
-                            .font(.subheadline)
-                            .foregroundStyle(.white)
+                            .foregroundStyle(colorText)
+                    }
+                    
+                    if !step.insideSteps.isEmpty {
+                        VStack(alignment: .leading, spacing: 8) {
+                            ForEach(step.insideSteps) { insideStep in
+                                HStack(alignment: .top, spacing: 10) {
+                                    Circle()
+                                        .fill(colorText)
+                                        .frame(width: 6, height: 6)
+                                        .padding(.top, 6)
+                                    
+                                    Text(insideStep.stepDescription)
+                                        .font(.subheadline)
+                                        .foregroundStyle(colorText)
+                                        .fixedSize(horizontal: false, vertical: true)
+                                }
+                                if insideStep.callStep != ""{
+                                    Button{
+                                        callNumber(phoneNumber: insideStep.callStep)
+                                    }label:{
+                                        HStack {
+                                            Text("Call: \(insideStep.callStep)")
+                                                .padding()
+                                                .font(.headline)
+                                        }
+                                        .frame(maxWidth: .infinity)
+                                        .frame(height: 45)
+                                        .background((emergency.color == Color("SevereAccident") || emergency.color == Color("VehicleFire"))  ? Color("AlertColor2") : Color("AlertColor2"))
+                                        .foregroundStyle(.white)
+                                        .cornerRadius(10)
+                                        .shadow(color: .black.opacity(0.15), radius: 10, y: 5)
+                                    }
+                                }
+                            }
+                        }
+                        .padding(.leading, 12)
+                    }
+                    if step.image != ""{
+                        Image(step.image)
+                            .resizable()
+                            .scaledToFill()
+                            .containerRelativeFrame(.vertical) { length, axis in
+                                length * 0.35
+                            }
+                            .clipped()
+                            .cornerRadius(15)
                     }
                 }
                 
@@ -105,7 +151,7 @@ struct EmergencyView: View {
                         .fill(.ultraThinMaterial)
                     if index == currentStepIndex {
                         Rectangle()
-                            .fill(emergency.color)
+                            .fill(emergency.color2)
                     }
                     else {
                         Rectangle()
@@ -125,18 +171,11 @@ struct EmergencyView: View {
         }
     }
 
-//    func stepIndicator(index: Int) -> some View {
-//        VStack {
-//            Circle()
-//                .fill(index <= currentStepIndex ? emergency.color : Color.gray.opacity(0.3))
-//                .frame(width: 28, height: 28)
-//                .overlay(Text("\(index + 1)").font(.caption2).bold().foregroundStyle(.white))
-//            
-//            if index < emergency.steps.count - 1 {
-//                Rectangle()
-//                    .fill(index < currentStepIndex ? emergency.color : Color.gray.opacity(0.3))
-//                    .frame(width: 2, height: 60)
-//            }
-//        }
-//    }
+    func callNumber(phoneNumber: String) {
+        let cleanNumber = phoneNumber.components(separatedBy: CharacterSet.decimalDigits.inverted).joined()
+        
+        if let url = URL(string: "tel://\(cleanNumber)"), UIApplication.shared.canOpenURL(url) {
+            UIApplication.shared.open(url)
+        }
+    }
 }
