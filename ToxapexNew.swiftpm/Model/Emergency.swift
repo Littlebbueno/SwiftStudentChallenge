@@ -35,6 +35,7 @@ class EmergencyStep: Identifiable {
     var specificAnimation: Bool
     var insideSteps: [EmergencyStep]
     var callStep: String
+    var warning: String
     
     init(title: String, image: String, stepDescription: String, specificAnimation: Bool, insideSteps: [EmergencyStep]?) {
         self.title = title
@@ -43,6 +44,16 @@ class EmergencyStep: Identifiable {
         self.specificAnimation = specificAnimation
         self.insideSteps = insideSteps ?? []
         self.callStep = ""
+        self.warning = ""
+    }
+    init(title: String, image: String, stepDescription: String, specificAnimation: Bool, insideSteps: [EmergencyStep]?, warning: String) {
+        self.title = title
+        self.image = image
+        self.stepDescription = stepDescription
+        self.specificAnimation = specificAnimation
+        self.insideSteps = insideSteps ?? []
+        self.callStep = ""
+        self.warning = warning
     }
     init(text: String, callNumber: String?) {
         self.title = ""
@@ -51,6 +62,7 @@ class EmergencyStep: Identifiable {
         self.specificAnimation = false
         self.insideSteps = []
         self.callStep = callNumber ?? ""
+        self.warning = ""
     }
 }
 
@@ -77,13 +89,15 @@ class EmergencyManager {
                 EmergencyStep(text: "191 (PRF): Federal Highways (BRs). Best for crime reporting and scene safety.", callNumber: nil),
                 EmergencyStep(text: "198 (PRE): State Highways. Best for official reports and traffic control.", callNumber: nil)
             ]),
-            EmergencyStep(title: "X: Bleeding & CPR", image: "imageCPRExample", stepDescription: "Apply firm pressure to heavy bleeding. If victim is not breathing, start CPR: 100-120 compressions/min.", specificAnimation: true, insideSteps: nil),
-            EmergencyStep(title: "A: Airway & Cervical", image: "", stepDescription: "Keep neck immobile. Slightly lift the chin to open the airway. NEVER remove a helmet.", specificAnimation: false, insideSteps: nil),
+            EmergencyStep(title: "Immediate Bleeding Control (X)", image: "", stepDescription: "Check for massive and uncontrollable bleeding (gushing). Apply firm pressure immediately.", specificAnimation: false, insideSteps: nil, warning: "Do not release pressure until the massive bleeding is controlled."),
+            EmergencyStep(title: "Cardiac Arrest & Positioning for CPR", image: "imageCPRExample", stepDescription: "If the victim is unresponsive and not breathing, position yourself to start Hands-Only CPR immediately.", specificAnimation: false, insideSteps: [EmergencyStep(text: "Kneel beside the person.", callNumber: nil), EmergencyStep(text: "Place the base of one hand in the center of your chest.", callNumber: nil), EmergencyStep(text: "Place your other hand on top and interlace your fingers.", callNumber: nil), EmergencyStep(text: "Position your shoulders directly above your hands.", callNumber: nil)]),
+            EmergencyStep(title: "Perform Hands-Only CPR", image: "", stepDescription: "Follow the steps and keep up with the rhythm of the animation.", specificAnimation: true, insideSteps: [EmergencyStep(text: "Press straight down 5-6 cm (2-2.5 inches) using your body weight.", callNumber: nil), EmergencyStep(text: "Release the compression, allowing the chest to return to its original position.", callNumber: nil), EmergencyStep(text: "If possible, rotate rescuers every 5 minutes/cycles to maintain the quality of CPR.", callNumber: nil)]),
+            EmergencyStep(title: "A: Airway & Cervical", image: "imageFireExample", stepDescription: "Keep neck immobile. Slightly lift the chin to open the airway. NEVER remove a helmet.", specificAnimation: false, insideSteps: nil),
             EmergencyStep(title: "B/C: General Check", image: "", stepDescription: "Watch for chest movement. Press a fingertip (color should return in 2s). Keep the victim warm.", specificAnimation: false, insideSteps: nil),
             EmergencyStep(title: "D/E: Final Assessment", image: "", stepDescription: "Check for responsiveness and hidden injuries. Monitor breathing until help arrives.", specificAnimation: false, insideSteps: nil),
             EmergencyStep(title: "What NOT to do", image: "", stepDescription: "Do not move the victim. Do not give food or water. Do not leave them alone.", specificAnimation: false, insideSteps: nil)
         ]
-        self.immediateEmergencies = [Emergency(title: "Severe Accident", image: "exclamationmark.octagon.fill", steps: medicalSteps, category: 1, color: Color("SevereAccident"), color2: Color("SevereAccident2")), Emergency(title: "Animal Hit", image: "pawprint.fill", steps: medicalSteps, category: 1, color: Color("AnimalHit"), color2: Color("AnimalHit")), Emergency(title: "Vehicle Fire", image: "flame.fill", steps: medicalSteps, category: 1, color: Color("VehicleFire"), color2: Color("VehicleFire2")), Emergency(title: "Medical", image: "cross.case.fill", steps: medicalSteps, category: 1, color: Color("Medical"), color2: Color("Medical"))]
+        self.immediateEmergencies = [Emergency(title: "Severe Accident", image: "exclamationmark.octagon.fill", steps: medicalSteps, category: 1, color: Color("SevereAccident"), color2: Color("SevereAccident2")), Emergency(title: "Animal Hit", image: "pawprint.fill", steps: medicalSteps, category: 1, color: Color("AnimalHit"), color2: Color("AnimalHit")), Emergency(title: "Vehicle Fire", image: "flame.fill", steps: medicalSteps, category: 1, color: Color("VehicleFire"), color2: Color("VehicleFire2")), Emergency(title: "Medical & First Aid", image: "cross.case.fill", steps: medicalSteps, category: 1, color: Color("Medical"), color2: Color("Medical"))]
         self.vehicleEmergencies = [Emergency(title: "Flat Tire", image: "tire", steps: medicalSteps, category: 2, color: Color("FlatTire"), color2: Color("FlatTire"))]
         self.roadWeatherEmergencies = []
         

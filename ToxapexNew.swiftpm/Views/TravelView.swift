@@ -14,6 +14,7 @@ struct TravelView: View {
     
     let colorCardEmergencyContacts = Color("AlertColor")
     @State var showDescriptionApp: Bool = false
+    @State var selectedEmergency: Emergency?
     
     @Environment(\.colorScheme) var colorScheme
     
@@ -125,6 +126,12 @@ struct TravelView: View {
                 }
             }
         }
+        .fullScreenCover(item: $selectedEmergency) { emergencyItem in
+            NavigationStack {
+                EmergencyView(emergency: emergencyItem)
+            }
+        }
+
     }
     
     var initialCards: some View {
@@ -174,7 +181,9 @@ struct TravelView: View {
     func emergencies(items: [Emergency]) -> some View {
         VStack(spacing: 12) {
             ForEach(Array(items.enumerated()), id: \.element.id) { index, emergency in
-                NavigationLink(destination: EmergencyView(emergency: emergency)){
+                Button{
+                    selectedEmergency = emergency
+                }label: {
                     VStack {
                         HStack(alignment: .center, spacing: 12) {
                             if index < items.count - 1 {

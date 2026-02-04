@@ -10,6 +10,7 @@ import SwiftUI
 struct EmergencyView: View {
     var emergency: Emergency
     @State private var currentStepIndex = 0
+    @Environment(\.dismiss) private var dismiss
     
     @Environment(\.colorScheme) var colorScheme
 
@@ -32,6 +33,15 @@ struct EmergencyView: View {
                     }
                     .padding()
                     
+                }
+            }
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        dismiss()
+                    }label:{
+                        Image(systemName: "xmark")
+                    }
                 }
             }
             .background {
@@ -77,6 +87,7 @@ struct EmergencyView: View {
                 HStack {
                     Text(step.title)
                         .font(.headline)
+                        .fontWeight(.semibold)
                         .foregroundStyle(index == currentStepIndex ? colorText: .primary)
                     Spacer()
                     Image(systemName: "chevron.right")
@@ -84,12 +95,21 @@ struct EmergencyView: View {
                         .foregroundStyle(index == currentStepIndex ? colorText: .primary)
                         .rotationEffect(.degrees(index == currentStepIndex ? 90 : 0))
                         .animation(.spring(response: 0.3, dampingFraction: 0.6), value: currentStepIndex)
+                        .onTapGesture {
+                            if currentStepIndex == index {
+                                withAnimation { currentStepIndex = -1 }
+                            }
+                            else {
+                                withAnimation{ currentStepIndex = index }
+                            }
+                        }
                 }
                 
                 
                 if index == currentStepIndex {
                     if step.stepDescription != "" {
                         Text(step.stepDescription)
+                            .fontWeight(.medium)
                             .font(.subheadline)
                             .foregroundStyle(colorText)
                     }
@@ -105,6 +125,7 @@ struct EmergencyView: View {
                                     
                                     Text(insideStep.stepDescription)
                                         .font(.subheadline)
+                                        .fontWeight(.medium)
                                         .foregroundStyle(colorText)
                                         .fixedSize(horizontal: false, vertical: true)
                                 }
@@ -116,6 +137,7 @@ struct EmergencyView: View {
                                             Text("Call: \(insideStep.callStep)")
                                                 .padding()
                                                 .font(.headline)
+                                                .fontWeight(.bold)
                                         }
                                         .frame(maxWidth: .infinity)
                                         .frame(height: 45)
@@ -129,6 +151,27 @@ struct EmergencyView: View {
                         }
                         .padding(.leading, 12)
                     }
+                    if step.warning != ""{
+                        HStack(alignment: .center ,spacing: 20) {
+                            Image(systemName: "exclamationmark.triangle.fill")
+                                .foregroundStyle(.red)
+                            Text(step.warning)
+                                .foregroundStyle(.red)
+                                .font(.subheadline)
+                                .fontWeight(.bold)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(14)
+                        .background {
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 12)
+                                    .fill(.ultraThinMaterial)
+                                RoundedRectangle(cornerRadius: 12)
+                                    .fill(.white)
+                                    .opacity(0.8)
+                            }
+                        }
+                    }
                     if step.image != ""{
                         Image(step.image)
                             .resizable()
@@ -138,6 +181,15 @@ struct EmergencyView: View {
                             }
                             .clipped()
                             .cornerRadius(15)
+                            .padding(.top, 6)
+                            .padding(.vertical, 8)
+                            .padding(.horizontal, 8)
+                    }
+                    if step.specificAnimation == true {
+                        if emergency.color == Color("Medical"){
+                            CPRAnimationView()
+                                .padding(40)
+                        }
                     }
                 }
                 
@@ -161,7 +213,9 @@ struct EmergencyView: View {
             }
             .cornerRadius(15)
             .onTapGesture {
-                withAnimation{ currentStepIndex = index }
+                if currentStepIndex != index {
+                    withAnimation{ currentStepIndex = index }
+                }
             }
         }
     }
@@ -174,3 +228,4 @@ struct EmergencyView: View {
         }
     }
 }
+
