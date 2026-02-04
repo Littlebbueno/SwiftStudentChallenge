@@ -15,6 +15,7 @@ struct EmergencyView: View {
 
     var body: some View {
             ScrollView {
+                let colorText = Color.white
                 VStack(spacing: 0) {
                     VStack(spacing: 15) {
                         Image(systemName: emergency.image)
@@ -26,7 +27,7 @@ struct EmergencyView: View {
                     
                     VStack(alignment: .leading, spacing: 20) {
                         ForEach(Array(emergency.steps.enumerated()), id: \.element.id) { index, step in
-                            cardEmergencyStep(step: step, index: index)
+                            cardEmergencyStep(step: step, index: index, colorText: colorText)
                         }
                     }
                     .padding()
@@ -69,26 +70,24 @@ struct EmergencyView: View {
             }
     }
     
-    func cardEmergencyStep(step: EmergencyStep, index: Int) -> some View {
+    func cardEmergencyStep(step: EmergencyStep, index: Int, colorText: Color) -> some View {
         HStack(alignment: .top, spacing: 15) {
             
             VStack(alignment: .leading, spacing: 8) {
                 HStack {
                     Text(step.title)
                         .font(.headline)
-                        .foregroundStyle(index == currentStepIndex ? .white : .primary)
+                        .foregroundStyle(index == currentStepIndex ? colorText: .primary)
                     Spacer()
                     Image(systemName: "chevron.right")
                         .font(.caption)
-                        .foregroundStyle(index == currentStepIndex ? .white :
-                                .secondary)
+                        .foregroundStyle(index == currentStepIndex ? colorText: .primary)
                         .rotationEffect(.degrees(index == currentStepIndex ? 90 : 0))
                         .animation(.spring(response: 0.3, dampingFraction: 0.6), value: currentStepIndex)
                 }
                 
                 
                 if index == currentStepIndex {
-                    let colorText = Color.white
                     if step.stepDescription != "" {
                         Text(step.stepDescription)
                             .font(.subheadline)
@@ -161,10 +160,6 @@ struct EmergencyView: View {
                 }
             }
             .cornerRadius(15)
-            .overlay(
-                RoundedRectangle(cornerRadius: 15)
-                    .stroke(index == currentStepIndex ? .white.opacity(0.5) : .clear, lineWidth: 0.5)
-            )
             .onTapGesture {
                 withAnimation{ currentStepIndex = index }
             }
