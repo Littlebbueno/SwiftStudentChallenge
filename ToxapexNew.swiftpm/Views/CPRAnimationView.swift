@@ -5,7 +5,7 @@
 //  Created by Marco Bueno on 04/02/26.
 //
 import SwiftUI
-import AVFoundation
+import AVFAudio
 
 struct CPRAnimationView: View {
     @State private var isExpanding = false
@@ -14,7 +14,7 @@ struct CPRAnimationView: View {
     
     let timer = Timer.publish(every: 60.0 / 110.0, on: .main, in: .common).autoconnect()
     
-    @State private var audioPlayer: AVAudioPlayer?
+    @State private var audioPlayer: AVAudioPlayer!
     
     var body: some View {
         ZStack {
@@ -46,33 +46,34 @@ struct CPRAnimationView: View {
         }
         .onAppear {
             setupAudio()
-            try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: .mixWithOthers)
         }
     }
     
     func setupAudio() {
-            let session = AVAudioSession.sharedInstance()
-            try? session.setCategory(.playback, mode: .default, options: [.mixWithOthers])
-            try? session.setActive(true)
-            if let soundURL = Bundle.main.url(forResource: "beepSound", withExtension: "wav") {
-                audioPlayer = try? AVAudioPlayer(contentsOf: soundURL)
-                audioPlayer?.prepareToPlay()
-                audioPlayer?.volume = 1.0
-            }
+        guard let soundFile = NSDataAsset(name: "beepSound") else{
+            print("Could not read the file named 'beepSound'")
+            return
         }
-
-        func playPulse() {
-//            if audioPlayer?.isPlaying == true {
-//                audioPlayer?.stop()
-//            }
-//            audioPlayer?.currentTime = 0
-//            audioPlayer?.play()
+        do {
+            try audioPlayer = AVAudioPlayer(data: soundFile.data)
             
-            counter += 1
-            withAnimation(.easeInOut(duration: bpmInterval)) {
-                isExpanding = true
-            }
+        }catch{
+            print("ERROr TO INICITIALIZE THE AUDIO PLAYER")
         }
+    }
+
+    func playPulse() {
+        if audioPlayer.isPlaying == true {
+            audioPlayer.stop()
+        }
+        audioPlayer.currentTime = 0
+        audioPlayer.play()
+        
+        counter += 1
+        withAnimation(.easeInOut(duration: 0.01)) {
+            isExpanding = true
+        }
+    }
 }
 
 #Preview {

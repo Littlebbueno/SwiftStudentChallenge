@@ -185,18 +185,11 @@ struct TravelView: View {
                     selectedEmergency = emergency
                 }label: {
                     VStack {
-                        HStack(alignment: .center, spacing: 12) {
-                            if index < items.count - 1 {
-                                Image(systemName: emergency.image)
-                                    .frame(width: 18)
-                                    .foregroundColor(emergency.color)
-                                    .offset(y: -5)
-                            }
-                            else{
-                                Image(systemName: emergency.image)
-                                    .frame(width: 18)
-                                    .foregroundColor(emergency.color)
-                            }
+                        HStack(alignment: .top, spacing: 12) {
+                            Image(systemName: emergency.image)
+                                .frame(width: 18)
+                                .foregroundColor(emergency.color)
+                            
                             VStack {
                                 HStack {
                                     Text(emergency.title)

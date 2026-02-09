@@ -15,6 +15,7 @@ struct EmergencyView: View {
     @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
+        ScrollViewReader { proxy in
             ScrollView {
                 let colorText = Color.white
                 VStack(spacing: 0) {
@@ -29,6 +30,7 @@ struct EmergencyView: View {
                     VStack(alignment: .leading, spacing: 20) {
                         ForEach(Array(emergency.steps.enumerated()), id: \.element.id) { index, step in
                             cardEmergencyStep(step: step, index: index, colorText: colorText)
+                                .id(index)
                         }
                     }
                     .padding()
@@ -58,7 +60,7 @@ struct EmergencyView: View {
                 }
                 .ignoresSafeArea()
             }
-//            .toolbarVisibility(.hidden, for: .tabBar)
+            //            .toolbarVisibility(.hidden, for: .tabBar)
             .navigationTitle(emergency.title)
             .navigationBarTitleDisplayMode(.inline)
             .safeAreaInset(edge: .bottom) {
@@ -78,6 +80,12 @@ struct EmergencyView: View {
                 .buttonStyle(.glassProminent)
                 .padding()
             }
+            .onChange(of: self.currentStepIndex) { _, newValue in
+                withAnimation(.easeInOut) {
+                    proxy.scrollTo(newValue, anchor: .center)
+                }
+            }
+        }
     }
     
     func cardEmergencyStep(step: EmergencyStep, index: Int, colorText: Color) -> some View {
@@ -114,44 +122,7 @@ struct EmergencyView: View {
                             .foregroundStyle(colorText)
                     }
                     
-                    if !step.insideSteps.isEmpty {
-                        VStack(alignment: .leading, spacing: 8) {
-                            ForEach(step.insideSteps) { insideStep in
-                                HStack(alignment: .top, spacing: 10) {
-                                    Circle()
-                                        .fill(colorText)
-                                        .frame(width: 6, height: 6)
-                                        .padding(.top, 6)
-                                    
-                                    Text(insideStep.stepDescription)
-                                        .font(.subheadline)
-                                        .fontWeight(.medium)
-                                        .foregroundStyle(colorText)
-                                        .fixedSize(horizontal: false, vertical: true)
-                                }
-                                if insideStep.callStep != ""{
-                                    Button{
-                                        callNumber(phoneNumber: insideStep.callStep)
-                                    }label:{
-                                        HStack {
-                                            Text("Call: \(insideStep.callStep)")
-                                                .padding()
-                                                .font(.headline)
-                                                .fontWeight(.bold)
-                                        }
-                                        .frame(maxWidth: .infinity)
-                                        .frame(height: 45)
-                                        .background((emergency.color == Color("SevereAccident") || emergency.color == Color("VehicleFire"))  ? Color("AlertColor2") : Color("AlertColor2"))
-                                        .foregroundStyle(.white)
-                                        .cornerRadius(10)
-                                        .shadow(color: .black.opacity(0.15), radius: 10, y: 5)
-                                    }
-                                }
-                            }
-                        }
-                        .padding(.leading, 12)
-                    }
-                    if step.warning != ""{
+                    if step.warning != "" && step.warningBefore == true{
                         HStack(alignment: .center ,spacing: 20) {
                             Image(systemName: "exclamationmark.triangle.fill")
                                 .foregroundStyle(.red)
@@ -168,9 +139,88 @@ struct EmergencyView: View {
                                     .fill(.ultraThinMaterial)
                                 RoundedRectangle(cornerRadius: 12)
                                     .fill(.white)
-                                    .opacity(0.8)
+                                    .opacity(0.86)
                             }
                         }
+                        .padding(.vertical, 6)
+                        .padding(.top, 2)
+                    }
+                    
+                    if !step.insideSteps.isEmpty {
+                        VStack(alignment: .leading, spacing: 8) {
+                            ForEach(step.insideSteps) { insideStep in
+                                if insideStep.stepDescription == "Move the lower jaw forward without tilting the head back to protect the neck." {
+                                    Text("Methods to clear the Airways:")
+                                        .fontWeight(.medium)
+                                        .font(.subheadline)
+                                        .foregroundStyle(colorText)
+                                        .offset(x: -12)
+                                        .padding(.top, 4)
+                        
+                                }
+                                HStack(alignment: .top, spacing: 10) {
+                                    Circle()
+                                        .fill(colorText)
+                                        .frame(width: 6, height: 6)
+                                        .padding(.top, 6)
+                                    if insideStep.title != ""{
+                                        Text("\(Text(insideStep.title).bold()) \(insideStep.stepDescription)")
+                                            .font(.subheadline)
+                                            .fontWeight(.regular)
+                                            .foregroundStyle(colorText)
+                                            .fixedSize(horizontal: false, vertical: true)
+                                    }else{
+                                        Text(insideStep.stepDescription)
+                                            .font(.subheadline)
+                                            .fontWeight(.regular)
+                                            .foregroundStyle(colorText)
+                                            .fixedSize(horizontal: false, vertical: true)
+                                    }
+                                }
+                                if insideStep.callStep != ""{
+                                    Button{
+                                        callNumber(phoneNumber: insideStep.callStep)
+                                    }label:{
+                                        HStack {
+                                            Text("Call: \(insideStep.callStep)")
+                                                .padding()
+                                                .font(.headline)
+                                                .fontWeight(.bold)
+                                        }
+                                        .frame(maxWidth: .infinity)
+                                        .frame(height: 45)
+                                        .background((emergency.color == Color("SevereAccident") || emergency.color == Color("VehicleFire"))  ? Color("AlertColor3") : Color("AlertColor2"))
+                                        .foregroundStyle(.white)
+                                        .cornerRadius(10)
+                                        .shadow(color: .black.opacity(0.15), radius: 10, y: 5)
+                                    }
+                                }
+                            }
+                        }
+                        .padding(.leading, 12)
+                    }
+                    if step.warning != "" && step.warningBefore == false{
+                        HStack(alignment: .center ,spacing: 20) {
+                            Image(systemName: "exclamationmark.triangle.fill")
+                                .foregroundStyle(.red)
+                            Text(step.warning)
+                                .foregroundStyle(.red)
+                                .font(.subheadline)
+                                .fontWeight(.bold)
+                        }
+                        .frame(maxWidth: .infinity)
+                        .padding(14)
+                        .background {
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 12)
+                                    .fill(.ultraThinMaterial)
+                                RoundedRectangle(cornerRadius: 12)
+                                    .fill(.white)
+                                    .opacity(0.86)
+                            }
+                        }
+                        .padding(.vertical, 6)
+                        .padding(.top, 2)
                     }
                     if step.image != ""{
                         Image(step.image)
@@ -186,7 +236,7 @@ struct EmergencyView: View {
                             .padding(.horizontal, 8)
                     }
                     if step.specificAnimation == true {
-                        if emergency.color == Color("Medical"){
+                        if emergency.color == Color("Medical") || emergency.color == Color("CPREmergency"){
                             CPRAnimationView()
                                 .padding(40)
                         }
