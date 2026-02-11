@@ -178,21 +178,38 @@ struct EmergencyView: View {
                                     }
                                 }
                                 if insideStep.callStep != ""{
-                                    Button{
-                                        callNumber(phoneNumber: insideStep.callStep)
-                                    }label:{
-                                        HStack {
-                                            Text("Call: \(insideStep.callStep)")
-                                                .padding()
-                                                .font(.headline)
-                                                .fontWeight(.bold)
+                                    if insideStep.callStep == "Emergency Contacts"{
+                                        NavigationLink(destination: EmergencyContactsView()) {
+                                            HStack {
+                                                Text("Emergency Contacts")
+                                                    .padding()
+                                                    .font(.headline)
+                                                    .fontWeight(.bold)
+                                            }
+                                            .frame(maxWidth: .infinity)
+                                            .frame(height: 45)
+                                            .background(.white)
+                                            .foregroundStyle(.black)
+                                            .cornerRadius(10)
+                                            .shadow(color: .black.opacity(0.15), radius: 10, y: 5)
                                         }
-                                        .frame(maxWidth: .infinity)
-                                        .frame(height: 45)
-                                        .background((emergency.color == Color("SevereAccident") || emergency.color == Color("VehicleFire"))  ? Color("AlertColor3") : Color("AlertColor2"))
-                                        .foregroundStyle(.white)
-                                        .cornerRadius(10)
-                                        .shadow(color: .black.opacity(0.15), radius: 10, y: 5)
+                                    }else {
+                                        Button{
+                                            callNumber(phoneNumber: insideStep.callStep)
+                                        }label:{
+                                            HStack {
+                                                Text("Call: \(insideStep.callStep)")
+                                                    .padding()
+                                                    .font(.headline)
+                                                    .fontWeight(.bold)
+                                            }
+                                            .frame(maxWidth: .infinity)
+                                            .frame(height: 45)
+                                            .background((emergency.color == Color("SevereAccident") || emergency.color == Color("VehicleFire"))  ? Color("AlertColor3") : Color("AlertColor2"))
+                                            .foregroundStyle(.white)
+                                            .cornerRadius(10)
+                                            .shadow(color: .black.opacity(0.15), radius: 10, y: 5)
+                                        }
                                     }
                                 }
                             }

@@ -44,10 +44,11 @@ struct AttentionView: View {
                     AttentionVisionView()
                 }
                 VStack {
+                    Spacer()
                     Text(attentionMode ? "ARKit Mode" : "Vision Mode")
                         .font(.headline)
-                        .foregroundStyle(.white)
-                        .offset(y: 30)
+                        .foregroundStyle(.white.opacity(0.7))
+                        .offset(y: -80)
                 }
             }
             
@@ -77,7 +78,7 @@ struct AttentionView: View {
             Spacer()
             Text(editedMode ? "ARKit Mode" : "Vision Mode")
                 .fontWeight(.semibold)
-                .foregroundStyle(.indigo)
+                .foregroundStyle(.white.opacity(0.7))
             Button{
                 editedMode.toggle()
             }label:{
@@ -87,7 +88,14 @@ struct AttentionView: View {
                         .padding()
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
-                        .glassEffect(in: .rect(cornerRadius: 12.0))
+                }
+                .background {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(.ultraThinMaterial)
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(.black.opacity(colorScheme == .light ? 0.3: 0))
+                    }
                 }
             }
             Button{

@@ -10,8 +10,7 @@ import SwiftUI
 
 @Observable
 class ARFaceManager: NSObject, ARSessionDelegate {
-    var eyesClosed = false
-    var isFaceDetected = false
+    var eyeStatus: eyeStatus = .nofaceDetected
     
     let session = ARSession()
     
@@ -38,11 +37,14 @@ class ARFaceManager: NSObject, ARSessionDelegate {
     
     func session(_ session: ARSession, didUpdate anchors: [ARAnchor]) {
         guard let faceAnchor = anchors.first as? ARFaceAnchor else {
-            if isFaceDetected { isFaceDetected = false }
+            if self.eyeStatus != .nofaceDetected {self.eyeStatus = .nofaceDetected}
             return
         }
         
-        isFaceDetected = faceAnchor.isTracked
+        if !faceAnchor.isTracked {
+            self.eyeStatus = .nofaceDetected
+            return
+        }
         
         let blendShapes = faceAnchor.blendShapes
         if let leftBlink = blendShapes[.eyeBlinkLeft] as? Float,
@@ -50,8 +52,11 @@ class ARFaceManager: NSObject, ARSessionDelegate {
             
             let closed = (leftBlink > 0.6 && rightBlink > 0.6)
             
-            if self.eyesClosed != closed {
-                self.eyesClosed = closed
+            if closed {
+                self.eyeStatus = .closed
+            }
+            else {
+                self.eyeStatus = .opened
             }
         }
     }

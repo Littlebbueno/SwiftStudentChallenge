@@ -13,8 +13,11 @@ struct CPRAnimationView: View {
     let bpmInterval = 60.0 / 110.0
     
     let timer = Timer.publish(every: 60.0 / 110.0, on: .main, in: .common).autoconnect()
+//    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
     @State private var audioPlayer: AVAudioPlayer!
+    
+    @State var lastTick = Date.now
     
     var body: some View {
         ZStack {
@@ -38,14 +41,20 @@ struct CPRAnimationView: View {
                             .repeatForever(autoreverses: false),
                         value: isExpanding
                     )
-                    .onReceive(timer) { _ in
-                        playPulse()
-                    }
                     .sensoryFeedback(.impact, trigger: counter)
             }
         }
         .onAppear {
             setupAudio()
+            audioPlayer.numberOfLoops = -1
+            audioPlayer.play()
+        }
+        .onReceive(timer) { _ in
+//            let duration = Date.now.timeIntervalSince(lastTick)
+//            print("tick \(duration)")
+//            lastTick = .now
+            
+            playPulse()
         }
     }
     
@@ -63,11 +72,6 @@ struct CPRAnimationView: View {
     }
 
     func playPulse() {
-        if audioPlayer.isPlaying == true {
-            audioPlayer.stop()
-        }
-        audioPlayer.currentTime = 0
-        audioPlayer.play()
         
         counter += 1
         withAnimation(.easeInOut(duration: 0.01)) {

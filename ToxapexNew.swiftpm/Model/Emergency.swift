@@ -85,11 +85,9 @@ class EmergencyManager {
     func loadEmergencies(){
         let cprSteps = [
             EmergencyStep(title: "Call for Help", image: "", stepDescription: "Call the highway's 0800 number for faster assistance. If unknown, use the emergency services below:", specificAnimation: false, insideSteps: [
-                EmergencyStep(title: "192 (SAMU)", text: "Best for medical emergencies and victim stabilization.", callNumber: "192"),
-                EmergencyStep(title: "191 (PRF)", text: "Federal Highways (BRs). Best for crime reporting and scene safety.", callNumber: nil),
-                EmergencyStep(title: "198 (PRE)", text: "State Highways. Best for official reports and traffic control.", callNumber: nil)
+                EmergencyStep(title: "192 (SAMU)", text: "Best for medical emergencies and victim stabilization.", callNumber: "192")
             ]),
-            EmergencyStep(title: "Cardiac Arrest & Positioning for CPR", image: "imageCPRExample", stepDescription: "If the victim is unresponsive and not breathing, position yourself to start Hands-Only CPR immediately.", specificAnimation: false, insideSteps: [EmergencyStep(title: nil, text: "Kneel beside the person.", callNumber: nil), EmergencyStep(title: nil, text: "Place the base of one hand in the center of your chest.", callNumber: nil), EmergencyStep(title: nil, text: "Place your other hand on top and interlace your fingers.", callNumber: nil), EmergencyStep(title: nil, text: "Position your shoulders directly above your hands.", callNumber: nil)]),
+            EmergencyStep(title: "Cardiac Arrest & Positioning for CPR", image: "imageCPR", stepDescription: "If the victim is unresponsive and not breathing, position yourself to start Hands-Only CPR immediately.", specificAnimation: false, insideSteps: [EmergencyStep(title: nil, text: "Kneel beside the person.", callNumber: nil), EmergencyStep(title: nil, text: "Place the base of one hand in the center of your chest.", callNumber: nil), EmergencyStep(title: nil, text: "Place your other hand on top and interlace your fingers.", callNumber: nil), EmergencyStep(title: nil, text: "Position your shoulders directly above your hands.", callNumber: nil)]),
             EmergencyStep(title: "Perform Hands-Only CPR", image: "", stepDescription: "Follow the steps and keep up with the rhythm of the animation.", specificAnimation: true, insideSteps: [EmergencyStep(title: nil, text: "Press straight down 5-6 cm (2-2.5 inches) using your body weight.", callNumber: nil), EmergencyStep(title: nil, text: "Release the compression, allowing the chest to return to its original position.", callNumber: nil), EmergencyStep(title: nil, text: "If possible, rotate rescuers every 5 minutes/cycles to maintain the quality of CPR.", callNumber: nil)], warning: "Do not stop until help arrives or the person starts breathing again.", warningBefore: false)
         ]
         let medicalSteps = [
@@ -101,10 +99,10 @@ class EmergencyManager {
             EmergencyStep(title: "Call for Help", image: "", stepDescription: "Call the highway's 0800 number for faster assistance. If unknown, use the emergency services below:", specificAnimation: false, insideSteps: [
                 EmergencyStep(title: "192 (SAMU):", text: "Best for medical emergencies and victim stabilization.", callNumber: "192"),
                 EmergencyStep(title: "191 (PRF):", text: "Federal Highways (BRs). Best for crime reporting and scene safety.", callNumber: nil),
-                EmergencyStep(title: "198 (PRE):", text: "State Highways. Best for official reports and traffic control.", callNumber: nil)
+                EmergencyStep(title: "198 (PRE):", text: "State Highways. Best for official reports and traffic control.", callNumber: "Emergency Contacts")
             ]),
             EmergencyStep(title: "(X) Immediate Bleeding Control", image: "", stepDescription: "Check for massive and uncontrollable bleeding (gushing). Apply firm pressure immediately.", specificAnimation: false, insideSteps: [EmergencyStep(title: nil, text: "If compresses is not available, grab the nearest clean cloth (shirt, towel, or gauze) and press it firmly against the bleed.", callNumber: nil)], warning: "Do not release pressure until the massive bleeding is controlled.", warningBefore: false),
-            EmergencyStep(title: "Cardiac Arrest & Positioning for CPR", image: "imageCPRExample", stepDescription: "If the victim is unresponsive and not breathing, position yourself to start Hands-Only CPR immediately.", specificAnimation: false, insideSteps: [EmergencyStep(title: nil, text: "Kneel beside the person.", callNumber: nil), EmergencyStep(title: nil, text: "Place the base of one hand in the center of your chest.", callNumber: nil), EmergencyStep(title: nil, text: "Place your other hand on top and interlace your fingers.", callNumber: nil), EmergencyStep(title: nil, text: "Position your shoulders directly above your hands.", callNumber: nil)]),
+            EmergencyStep(title: "Cardiac Arrest & Positioning for CPR", image: "imageCPR", stepDescription: "If the victim is unresponsive and not breathing, position yourself to start Hands-Only CPR immediately.", specificAnimation: false, insideSteps: [EmergencyStep(title: nil, text: "Kneel beside the person.", callNumber: nil), EmergencyStep(title: nil, text: "Place the base of one hand in the center of your chest.", callNumber: nil), EmergencyStep(title: nil, text: "Place your other hand on top and interlace your fingers.", callNumber: nil), EmergencyStep(title: nil, text: "Position your shoulders directly above your hands.", callNumber: nil)]),
             EmergencyStep(title: "Perform Hands-Only CPR", image: "", stepDescription: "Follow the steps and keep up with the rhythm of the animation.", specificAnimation: true, insideSteps: [EmergencyStep(title: nil, text: "Press straight down 5-6 cm (2-2.5 inches) using your body weight.", callNumber: nil), EmergencyStep(title: nil, text: "Release the compression, allowing the chest to return to its original position.", callNumber: nil), EmergencyStep(title: nil, text: "If possible, rotate rescuers every 5 minutes/cycles to maintain the quality of CPR.", callNumber: nil)], warning: "Do not stop until help arrives or the person starts breathing again.", warningBefore: false),
             EmergencyStep(title: "(A) Airway & Spinal Protection", image: "", stepDescription: "Check if the airways are clear and stabilize the cervical spine.", specificAnimation: false, insideSteps: [EmergencyStep(title: nil, text: "Keep the head and neck aligned. Ideally, the entire spine should be immobilized using a backboard (long spine board).", callNumber: nil), EmergencyStep(title: "Jaw Thrust (Preferred for Trauma):", text: "Move the lower jaw forward without tilting the head back to protect the neck.", callNumber: nil), EmergencyStep(title: "Chin Lift:", text: "If there is no suspicion of spinal injury, lift the chin to open the airway.", callNumber: nil)], warning: "Do not move the victim’s neck. If they are wearing a helmet, do not remove it.", warningBefore: true),
             EmergencyStep(title: "(B) Breathing & Ventilation", image: "", stepDescription: "Assess if the breathing is effective and the patient is well-oxygenated.", specificAnimation: false, insideSteps: [
@@ -160,7 +158,7 @@ class EmergencyManager {
                     EmergencyStep(title: "High Risk:", text: "Large fire? Stay 40m away. The smoke will alert others—do NOT risk setting the triangle.", callNumber: nil),
                     EmergencyStep(title: "Low Risk:", text: "Small fire? Set the triangle (1 step per km/h).", callNumber: nil),
                     EmergencyStep(title: "193 (Fire Department):", text: "Call 193 if there is fire, smoke, or fuel leaks.", callNumber: "193"),
-                    EmergencyStep(title: "Assistance:", text: "Once safe, call road assistance (0800 number) or your insurance.", callNumber: nil)
+                    EmergencyStep(title: "Assistance:", text: "Once safe, call road assistance (0800 number) or your insurance.", callNumber: "Emergency Contacts")
                 ]
             ),
             EmergencyStep(
@@ -177,6 +175,78 @@ class EmergencyManager {
                 ]
             )
         ]
+        
+        let animalHitStep = [EmergencyStep(title: "Signaling and Safety", image: "", stepDescription: "",
+                           specificAnimation: false,
+                           insideSteps: [
+                               EmergencyStep(title: "", text: "Park on the shoulder BEFORE the accident site to keep your vehicle visible to others and turn on hazard lights.", callNumber: nil),
+                               EmergencyStep(title: "", text: "Place the warning triangle at a distance equal to the speed limit (min. 30m). If unavailable, use tree branches or a flashlight from a safe distance off-road.", callNumber: nil)
+                           ]), EmergencyStep(
+                            title: "What NOT to do",
+                            image: "",
+                            stepDescription: "",
+                            specificAnimation: false,
+                            insideSteps: [
+                                EmergencyStep(title: "Do Not Touch:", text: "Alive animals may bite or kick out of fear.", callNumber: nil),
+                                EmergencyStep(title: "Do Not Feed:", text: "Never give food or water. It can worsen shock or cause choking if surgery is needed.", callNumber: nil),
+                                EmergencyStep(title: "No Bright Lights:", text: "Avoid shining high beams or flashlights directly into their eyes; this causes extreme stress.", callNumber: nil)
+                            ]
+                        ),
+                             EmergencyStep(
+                                 title: "Call for Help",
+                                 image: "",
+                                 stepDescription: "The Best Option on tolled highways: Call the Road Authority's 0800 number first. They provide the fastest response and are usually found on signs along the highway. If you can't find it, use the emergency services below.",
+                                 specificAnimation: false,
+                                 insideSteps: [
+                                    EmergencyStep(
+                                        title: "Highway Police (191):",
+                                        text: "Call for accidents on Federal highways.",
+                                        callNumber: ""
+                                    ),
+
+                                    EmergencyStep(
+                                        title: "Environmental Military Police (190):",
+                                        text: "Call for accidents on State highways.",
+                                        callNumber: "Emergency Contacts"
+                                    )
+                                 ]
+                             ),
+                             EmergencyStep(
+                                 title: "Moving the Animal",
+                                 image: "",
+                                 stepDescription: "Attempt to move the animal to the shoulder to prevent further accidents.",
+                                 specificAnimation: false,
+                                 insideSteps: [
+                                     EmergencyStep(title: "Confirm Situation:", text: "Ensure the animal is deceased and the area is properly signposted with clear traffic before stepping onto the lanes.", callNumber: nil),
+                                     EmergencyStep(title: "Small Animals:", text: "Use a tool, cloth, or gloves to slide the body to the nearest shoulder. Avoid direct skin contact.", callNumber: nil),
+                                     EmergencyStep(title: "Large Animals:", text: "Do not move large carcasses alone. Ask another driver for help or wait for the authorities to arrive.", callNumber: nil)
+                                 ],
+                                 warning: "NEVER move an animal that shows any sign of life. If in doubt, go to next step and wait for rescue.",
+                                 warningBefore: true
+                             ),
+                             EmergencyStep(
+                                 title: "Protecting the Animal",
+                                 image: "",
+                                 stepDescription: "If the animal is only injured. Be its protector until help arrives.",
+                                 specificAnimation: false,
+                                 insideSteps: [
+                                     EmergencyStep(title: "Be a Shield:", text: "Keep your hazard lights on and signal constantly to others. You are preventing a second impact.", callNumber: nil),
+                                     EmergencyStep(title: "Peace and Quiet:", text: "Turn off loud music and speak softly. A calm environment is the best first aid for their shock.", callNumber: nil)
+                                 ]
+                             ),
+                             EmergencyStep(
+                                 title: "Vehicle Check-up",
+                                 image: "",
+                                 stepDescription: "Check for hidden damage before continuing.",
+                                 specificAnimation: false,
+                                 insideSteps: [
+                                     EmergencyStep(title: "Leaks & Fluids:", text: "Check under the car for leaks. Do not drive if you see significant fluid loss (coolant/oil).", callNumber: nil),
+                                     EmergencyStep(title: "Lights & Power:", text: "Ensure headlights and signals work. Watch for dashboard warnings or rising engine temperature for the next few kilometers.", callNumber: nil),
+                                     EmergencyStep(title: "Tires & Handling:", text: "Check for flat tires and verify if the steering feels normal (not pulling to the side).", callNumber: nil),
+                                     EmergencyStep(title: "Loose Parts:", text: "Make sure nothing is dragging under the car. Secure loose bumpers if possible.", callNumber: nil)
+                                 ]
+                             )
+        ]
 //        EmergencyStep(
 //            title: "Rauteck Maneuver",
 //            image: "imageFireExample",
@@ -191,8 +261,79 @@ class EmergencyManager {
 //            warning: "Only use this maneuver if there is an immediate threat to life.",
 //            warningBefore: true
 //        )
-        self.immediateEmergencies = [Emergency(title: "Severe Accident", image: "exclamationmark.octagon.fill", steps: medicalSteps, category: 1, color: Color("SevereAccident"), color2: Color("SevereAccident2")), Emergency(title: "Animal Hit", image: "pawprint.fill", steps: medicalSteps, category: 1, color: Color("AnimalHit"), color2: Color("AnimalHit")), Emergency(title: "Vehicle Fire", image: "flame.fill", steps: vehicleFireSteps, category: 1, color: Color("VehicleFire"), color2: Color("VehicleFire2")), Emergency(title: "Medical & First Aid", image: "cross.case.fill", steps: medicalSteps, category: 1, color: Color("Medical"), color2: Color("Medical")), Emergency(title: "CPR Resuscitation", image: "heart.fill", steps: cprSteps, category: 1, color: Color("CPREmergency"), color2: Color("CPREmergency2"))]
-        self.vehicleEmergencies = [Emergency(title: "Flat Tire", image: "tire", steps: medicalSteps, category: 2, color: Color("FlatTire"), color2: Color("FlatTire"))]
+        
+        let flatTireSteps = [
+            EmergencyStep(
+                title: "Safety & Signaling",
+                image: "",
+                stepDescription: "Park on flat, firm ground. Set to 'P' or gear, pull handbrake, and place the triangle 30m back.",
+                specificAnimation: false,
+                insideSteps: []
+            ),
+
+            EmergencyStep(
+                title: "Locate Tools",
+                image: "",
+                stepDescription: "Get the jack, lug wrench, and spare tire from under the trunk floor.",
+                specificAnimation: false,
+                insideSteps: []
+            ),
+
+            EmergencyStep(
+                title: "Loosen Bolts",
+                image: "",
+                stepDescription: "With the car on the ground, loosen bolts counter-clockwise. Use your body weight if they are stuck.",
+                specificAnimation: false,
+                insideSteps: []
+            ),
+
+            EmergencyStep(
+                title: "Lift the Car",
+                image: "",
+                stepDescription: "Place the jack at the manual's designated spot and lift until the tire clears the ground.",
+                specificAnimation: false,
+                insideSteps: []
+            ),
+
+            EmergencyStep(
+                title: "Swap the Tire",
+                image: "",
+                stepDescription: "Swap the flat for the spare. Tip: Slide the flat tire under the car frame for extra safety.",
+                specificAnimation: false,
+                insideSteps: [],
+                warning: "NEVER place any part of your body under the vehicle while it is on the jack.",
+                warningBefore: false
+            ),
+
+            EmergencyStep(
+                title: "Initial Tighten",
+                image: "",
+                stepDescription: "Hand-tighten bolts, then use the wrench in a 'cross' pattern (tighten opposite sides).",
+                specificAnimation: false,
+                insideSteps: []
+            ),
+
+            EmergencyStep(
+                title: "Lower & Secure",
+                image: "",
+                stepDescription: "Lower the car and remove the jack. Give the bolts a final, firm tighten with the wrench.",
+                specificAnimation: false,
+                insideSteps: []
+            ),
+
+            EmergencyStep(
+                title: "Speed Limit",
+                image: "",
+                stepDescription: "Temporary spares have a limit (usually 80 km/h). Drive straight to a tire shop.",
+                specificAnimation: false,
+                insideSteps: []
+            )]
+        self.immediateEmergencies = [Emergency(title: "Severe Accident", image: "exclamationmark.octagon.fill", steps: medicalSteps, category: 1, color: Color("SevereAccident"), color2: Color("SevereAccident2")),
+            Emergency(title: "Vehicle Fire", image: "flame.fill", steps: vehicleFireSteps, category: 1, color: Color("VehicleFire"), color2: Color("VehicleFire2")),
+            Emergency(title: "Animal Hit", image: "pawprint.fill", steps: animalHitStep, category: 1, color: Color("AnimalHit"), color2: Color("AnimalHit")),
+            Emergency(title: "Medical & First Aid", image: "cross.case.fill", steps: medicalSteps, category: 1, color: Color("Medical"), color2: Color("Medical")),
+            Emergency(title: "CPR Resuscitation", image: "heart.fill", steps: cprSteps, category: 1, color: Color("CPREmergency"), color2: Color("CPREmergency2"))]
+        self.vehicleEmergencies = [Emergency(title: "Flat Tire", image: "tire", steps: flatTireSteps, category: 2, color: Color("FlatTire"), color2: Color("FlatTire"))]
         self.roadWeatherEmergencies = []
         
     }

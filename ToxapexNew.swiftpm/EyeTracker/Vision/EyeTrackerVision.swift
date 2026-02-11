@@ -8,11 +8,17 @@ import Vision
 import UIKit
 import SwiftUI
 
+enum eyeStatus {
+    case opened
+    case closed
+    case nofaceDetected
+}
+
+
 @available(iOS 17.0, *)
 @Observable
 class EyeTracker{
-    var eyesClosed: Bool = false
-    var noFaceDetected: Bool = true
+    var eyeStatus: eyeStatus = .nofaceDetected
     
     var leftEyePoints: [CGPoint] = []
     var rightEyePoints: [CGPoint] = []
@@ -20,10 +26,10 @@ class EyeTracker{
     func detectEyes(on image: CIImage) {
         let request = VNDetectFaceLandmarksRequest { [weak self] request, error in
             guard let results = request.results as? [VNFaceObservation] else {
-                self?.noFaceDetected = true
+                self?.eyeStatus = .nofaceDetected
                 return }
             if results.isEmpty {
-                self?.noFaceDetected = true
+                self?.eyeStatus = .nofaceDetected
                 return
             }
             
@@ -31,12 +37,15 @@ class EyeTracker{
                 guard let landmarks = face.landmarks else {
                     continue
                 }
-                self?.noFaceDetected = false
                 
                 let leftEyeClosed = self?.checkEyeStatus(landmarks.leftEye) ?? false
                 let rightEyeClosed = self?.checkEyeStatus(landmarks.rightEye) ?? false
                 
-                self?.eyesClosed = leftEyeClosed && rightEyeClosed
+                if leftEyeClosed && rightEyeClosed {
+                    self?.eyeStatus = .closed
+                } else {
+                    self?.eyeStatus = .opened
+                }
                 self?.rightEyePoints = self?.convertPoints(landmarks.leftEye) ?? []
                 self?.leftEyePoints = self?.convertPoints(landmarks.rightEye) ?? []
                 
@@ -52,7 +61,7 @@ class EyeTracker{
     private func checkEyeStatus(_ eye: VNFaceLandmarkRegion2D?) -> Bool {
         guard let eye = eye, eye.pointCount > 0 else { return false }
         
-        // No Vision, podemos usar a confiança da detecção ou o EAR manual.
+        // No Vision, podemos usar o EAR manual (testar depois).
         let points = eye.normalizedPoints
         if points.count < 6 { return false }
         

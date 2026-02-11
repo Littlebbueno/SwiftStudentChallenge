@@ -18,21 +18,40 @@ struct AttentionARKitView: View {
     @State private var assistActive: Bool = false
     @Environment(\.colorScheme) var colorScheme
     
-//    @State private var previewCameraActive: Bool = false
+    @State private var previewCameraActive: Bool = false
     
     var body: some View {
         GeometryReader { geo in
             ZStack {
-//                if previewCameraActive {
-//                    ARCameraView(session: eyeTracker.session)
-//                        .ignoresSafeArea()
-//                }
+                if previewCameraActive {
+                    ARCameraView(session: eyeTracker.session)
+                        .containerRelativeFrame(.horizontal){ lenght, axis in
+                            lenght * 0.4
+                        }
+                        .containerRelativeFrame(.vertical){ lenght, axis in
+                            lenght * 0.4
+                        }
+                        .cornerRadius(20)
+                }
                 
                 
-                VStack(spacing: 40) {
+                VStack(spacing: 20) {
                     statusIndicator
-                    informativePart
-                        .padding()
+                    VStack {
+                        if assistActive {
+                            Button{
+                                self.previewCameraActive.toggle()
+                            }label:{
+                                Image(systemName: previewCameraActive == true ? "video.slash" : "video")
+                                    .foregroundStyle(Color("AccentColor"))
+                                    .frame(height: 20)
+                            }
+                            .tint(Color.white)
+                            .buttonStyle(.glassProminent)
+                        }
+                        informativePart
+                    }
+                    .padding()
                     Spacer()
                     if self.assistActive {
                         buttonCloseAssistant
@@ -44,11 +63,14 @@ struct AttentionARKitView: View {
                 }
                 .padding(.top, 50)
             }
-            .onChange(of: eyeTracker.eyesClosed) { _, isClosed in
-                if isClosed {
-                    startTimer()
-                } else {
-                    stopTimer()
+            .onChange(of: eyeTracker.eyeStatus) { _, eyeStatus in
+                if assistActive {
+                    if eyeStatus != .opened {
+                        startTimer()
+                    }
+                    else {
+                        stopTimer()
+                    }
                 }
             }
             .onChange(of: self.assistActive) { _, attentionAssist in
@@ -71,17 +93,17 @@ struct AttentionARKitView: View {
     
     var informativePart: some View {
         VStack {
-            if eyeTracker.isFaceDetected == false {
+            if eyeTracker.eyeStatus == .nofaceDetected {
                 Text("NO FACE DETECTED")
                     .font(.system(size: 24, weight: .bold))
-                    .foregroundColor(Color("DarkBrown"))
+                    .foregroundColor(Color("NoFaceDetected2"))
                 
                 Text("For best results, securely mount your phone and keep your face centered. Ensure there is adequate lighting for face detection.")
                     .font(.caption)
             }else {
-                Text(eyeTracker.eyesClosed ? "EYES CLOSED" : "EYES OPEN")
+                Text(eyeTracker.eyeStatus == .closed ? "EYES CLOSED" : "EYES OPEN")
                     .font(.system(size: 24, weight: .bold))
-                    .foregroundColor(eyeTracker.eyesClosed ? .red : Color("DarkGreen"))
+                    .foregroundColor(eyeTracker.eyeStatus == .closed ? Color("ClosedEyes2") : Color("OpenEyes2"))
                 
                 Text("Keep the device securely in place on the dashboard.")
                     .font(.caption)
@@ -89,8 +111,13 @@ struct AttentionARKitView: View {
         }
         .padding()
         .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(Color("CinzaCards").opacity(1))
+            ZStack {
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(.ultraThinMaterial)
+                RoundedRectangle(cornerRadius: 16)
+                    .foregroundStyle(Color("CinzaCards").opacity(colorScheme == .light ? 0.3: 0.0))
+            }
+            
                 
         )
     }
@@ -98,6 +125,7 @@ struct AttentionARKitView: View {
         Button{
             withAnimation {
                 self.assistActive = true
+                self.previewCameraActive = true
             }
         }label:{
             HStack {
@@ -119,27 +147,28 @@ struct AttentionARKitView: View {
         Button {
             withAnimation {
                 self.assistActive = false
+                self.previewCameraActive = false
             }
             Task {
                 try? await Task.sleep(nanoseconds: 200_000_000)
-                self.eyeTracker.isFaceDetected = false
+                self.eyeTracker.eyeStatus = .nofaceDetected
             }
         }label:{
             HStack {
                 Image(systemName: "square.fill")
                 Text("Close Assistant")
-                    .foregroundColor(.red)
                     .font(.headline)
             }
+            .foregroundColor(Color("SevereAccident"))
             .frame(maxWidth: .infinity)
 
         }
     }
     
     var statusIndicator: some View {
-        if eyeTracker.isFaceDetected == false {
+        if eyeTracker.eyeStatus == .nofaceDetected {
             Circle()
-                .foregroundStyle(Color("DarkBrown").gradient)
+                .foregroundStyle(Color("NoFaceDetected").gradient)
                 .frame(width: 120, height: 120)
                 .overlay(
                     Image(systemName: "xmark.circle")
@@ -148,10 +177,10 @@ struct AttentionARKitView: View {
                 )
         }else {
             Circle()
-                .foregroundStyle((eyeTracker.eyesClosed ? Color.red : Color("DarkGreen")).gradient)
+                .foregroundStyle((eyeTracker.eyeStatus == .closed ? Color.red : Color("OpenEyes")).gradient)
                 .frame(width: 120, height: 120)
                 .overlay(
-                    Image(systemName: eyeTracker.eyesClosed ? "xmark.circle" : "checkmark.circle")
+                    Image(systemName: eyeTracker.eyeStatus == .closed ? "xmark.circle" : "checkmark.circle")
                         .foregroundColor(.white)
                         .font(.system(size: 50))
                 )
@@ -169,6 +198,8 @@ struct AttentionARKitView: View {
     }
     
     func startTimer() {
+        timer?.invalidate()
+        timer = nil
         timer = Timer.scheduledTimer(withTimeInterval: intervalo, repeats: true) { _ in
             Task {
                 await falarPergunta()

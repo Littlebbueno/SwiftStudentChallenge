@@ -49,6 +49,12 @@ struct EmergencyContactsView: View {
             number: "193",
             description: "Rescue of victims and fire emergencies.",
             image: "fire.extinguisher.fill"
+        ),
+        PrimaryContact(
+            name: "State Highway Patrol",
+            number: "198",
+            description: "State-managed highway accidents and crimes.",
+            image: "light.beacon.max.fill"
         )
     ]
     
@@ -69,58 +75,68 @@ struct EmergencyContactsView: View {
 //                        .foregroundStyle(.primary)
                     VStack(alignment: .leading, spacing: 12) {
                         ForEach(primaryContacts, id: \.id) { contact in
-                            Link(destination: URL(string: "tel://\(contact.number)")!){
-                                VStack(alignment: .leading, spacing: 6) {
-                                    HStack(spacing: 8) {
-                                        Image(systemName: contact.image ?? "shield.fill")
-                                            .font(.system(.headline, design: .rounded))
-                                            .fontWeight(.bold)
-                                            .foregroundStyle(colorScheme == .dark ? Color("Azul"): Color("Azul"))
-                                            .frame(width: 24, alignment: .leading)
-                                        VStack(alignment: .leading) {
-                                            Text("\(contact.number): \(contact.name)")
-                                                .font(.headline)
-                                                .foregroundStyle(colorScheme == .dark ? Color("Azul"): Color("Azul"))
-                                            Text(contact.description)
-                                                .font(.caption)
-                                                .foregroundStyle(Color(uiColor: .secondaryLabel))
-                                                .lineLimit(2)
-                                                .multilineTextAlignment(.leading)
-                                        }
-                                        
-                                        Spacer()
-                                        
-                                        Image(systemName: "phone.fill")
-                                            .font(.subheadline)
-                                            .foregroundStyle(.pink)
-                                    }
-                                }
-                                .dynamicTypeSize(...DynamicTypeSize.xLarge)
-                                .padding()
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .background{
-                                    ZStack {
-                                        RoundedRectangle(cornerRadius: 16)
-                                            .fill(.ultraThinMaterial)
-                                        Rectangle()
-                                            .foregroundColor(Color(.secondarySystemGroupedBackground))
-                                            .cornerRadius(16)
-                                            .opacity(colorScheme == .dark ? 0.4 : 1)
-                                    }
-                                }
-                            }
+                            cardPrimaryContact(contact: contact)
                         }
                     }
                     Text("Personal Contacts")
                         .font(.title)
                         .fontWeight(.bold)
                         .foregroundStyle(.primary)
+                    Text("SAVE THE 0800 NUMBER FOR THE HIGHWAYS YOU USUALLY TRAVEL ON")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
                 }
                 .padding()
             }
             .navigationTitle("Emergency Contacts")
             .navigationBarTitleDisplayMode(.inline)
             
+        }
+    }
+    
+    func cardPrimaryContact(contact: PrimaryContact) -> some View{
+        Link(destination: URL(string: "tel://\(contact.number)")!){
+            HStack {
+                VStack(alignment: .leading, spacing: 10) {
+                    HStack(alignment: .top, spacing: 8) {
+                        Image(systemName: contact.image ?? "shield.fill")
+                            .font(.system(.headline, design: .rounded))
+                            .fontWeight(.bold)
+                            .foregroundStyle(colorScheme == .dark ? Color("Azul"): Color("Azul"))
+                            .frame(width: 24, alignment: .leading)
+                        Text("\(contact.number): \(contact.name)")
+                            .font(.headline)
+                            .foregroundStyle(colorScheme == .dark ? Color("Azul"): Color("Azul"))
+                    }
+                    Text(contact.description)
+                        .font(.caption)
+                        .foregroundStyle(Color(uiColor: .secondaryLabel))
+                        .lineLimit(2)
+                        .multilineTextAlignment(.leading)
+                    
+                }
+                Spacer()
+                Image(systemName: "phone.fill")
+                    .font(.subheadline)
+                    .foregroundStyle(.pink)
+                
+                
+            }
+            .dynamicTypeSize(...DynamicTypeSize.xLarge)
+            .padding(16)
+//                                .padding(.vertical, 4)
+//                                .padding(.trailing, 4)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background{
+                ZStack {
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(.ultraThinMaterial)
+                    Rectangle()
+                        .foregroundColor(Color(.secondarySystemGroupedBackground))
+                        .cornerRadius(16)
+                        .opacity(colorScheme == .dark ? 0.4 : 1)
+                }
+            }
         }
     }
 }
