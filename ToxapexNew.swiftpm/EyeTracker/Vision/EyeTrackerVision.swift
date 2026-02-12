@@ -15,10 +15,13 @@ enum eyeStatus {
 }
 
 
-@available(iOS 17.0, *)
 @Observable
 class EyeTracker{
     var eyeStatus: eyeStatus = .nofaceDetected
+    
+    let isAcessibilityOn = UserDefaults.standard.bool(forKey: "acessibilityMode")
+    // false = left, true = right
+    let whichEye = UserDefaults.standard.bool(forKey: "acessibilityEye")
     
     var leftEyePoints: [CGPoint] = []
     var rightEyePoints: [CGPoint] = []
@@ -37,18 +40,33 @@ class EyeTracker{
                 guard let landmarks = face.landmarks else {
                     continue
                 }
+                guard let self = self else { return }
                 
-                let leftEyeClosed = self?.checkEyeStatus(landmarks.leftEye) ?? false
-                let rightEyeClosed = self?.checkEyeStatus(landmarks.rightEye) ?? false
+                let leftEyeClosed = self.checkEyeStatus(landmarks.leftEye)
+                let rightEyeClosed = self.checkEyeStatus(landmarks.rightEye)
                 
-                if leftEyeClosed && rightEyeClosed {
-                    self?.eyeStatus = .closed
-                } else {
-                    self?.eyeStatus = .opened
+                if self.isAcessibilityOn {
+                    if self.whichEye {
+                        if rightEyeClosed {
+                            self.eyeStatus = .closed
+                        }else {
+                            self.eyeStatus = .opened
+                        }
+                    }
+                    else {
+                        if leftEyeClosed {
+                            self.eyeStatus = .closed
+                        }else {
+                            self.eyeStatus = .opened
+                        }
+                    }
+                }else {
+                    if leftEyeClosed && rightEyeClosed {
+                        self.eyeStatus = .closed
+                    } else {
+                        self.eyeStatus = .opened
+                    }
                 }
-                self?.rightEyePoints = self?.convertPoints(landmarks.leftEye) ?? []
-                self?.leftEyePoints = self?.convertPoints(landmarks.rightEye) ?? []
-                
             }
         }
         
@@ -59,41 +77,29 @@ class EyeTracker{
     }
     
     private func checkEyeStatus(_ eye: VNFaceLandmarkRegion2D?) -> Bool {
-        guard let eye = eye, eye.pointCount > 0 else { return false }
+        guard let eye = eye, eye.pointCount >= 6 else { return false }
         
-        // No Vision, podemos usar o EAR manual (testar depois).
         let points = eye.normalizedPoints
-        if points.count < 6 { return false }
         
-        let topY = (points[1].y + points[2].y) / 2
-        let bottomY = (points[4].y + points[5].y) / 2
+        // 0: inner corner
+        // 3: outer corner
+        // 1, 2: upper eyelid
+        // 4, 5: lower eyelid
         
-        let distance = abs(topY - bottomY)
-        return distance < 0.020
+        // Eye Aspect Ration Formula
+        let v1 = distance(points[1], points[5])
+        let v2 = distance(points[2], points[4])
+        
+        let h = distance(points[0], points[3])
+        
+        let ear = (v1 + v2) / (2.0 * h)
+        
+        // 0.15 a 0.22
+        return ear < 0.13
     }
-    
-    private func convertPoints(_ region: VNFaceLandmarkRegion2D?) -> [CGPoint] {
-        guard let region = region else { return [] }
-        return region.normalizedPoints.map { CGPoint(x: $0.x, y: $0.y) }
-    }
-}
 
-struct LandmarksOverlay: View {
-    let points: [CGPoint]
-    let size: CGSize
-    let color: Color
-
-    var body: some View {
-        Canvas { context, size in
-            for (index, point) in points.enumerated() {
-                let x = point.x * size.width
-                let y = point.y * size.height
-                
-                let rect = CGRect(x: x - 2, y: y - 2, width: 4, height: 4)
-                context.fill(Path(ellipseIn: rect), with: .color(color))
-                
-                context.draw(Text("\(index)").font(.system(size: 8)), at: CGPoint(x: x + 5, y: y))
-            }
-        }
+    // Pitagoras
+    private func distance(_ p1: CGPoint, _ p2: CGPoint) -> CGFloat {
+        return sqrt(pow(p2.x - p1.x, 2) + pow(p2.y - p1.y, 2))
     }
 }

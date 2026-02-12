@@ -132,12 +132,12 @@ class EmergencyManager {
                         EmergencyStep(title: "Fire Size:", text: "If flames pass the hood or reach the cabin, evacuate. The fire is too large for the extinguisher.", callNumber: nil),
                         EmergencyStep(title: nil, text: "Only proceed to 'Firefighting' if the fire is manageable. Otherwise, skip it.", callNumber: nil)
             ],
-                         warning: "Do NOT open the hood or lift it up, it can worsen the fire.",
+                         warning: "Do NOT lift the hood up, it can worsen the fire.",
                          warningBefore: true
         ),
             EmergencyStep(
                 title: "Firefighting",
-                image: "imageFireExample",
+                image: "imageFire",
                 stepDescription: "Extinguish the fire through a SMALL GAP.",
                 specificAnimation: false,
                 insideSteps: [
@@ -146,7 +146,7 @@ class EmergencyManager {
                     EmergencyStep(title: nil, text: "Even if flames are gone, do not restart the car.", callNumber: nil)
                     
                 ],
-                warning: "Do NOT open the hood or lift it up, it can worsen the fire.",
+                warning: "Do NOT lift the hood up, it can worsen the fire.",
                 warningBefore: true
             ),
             EmergencyStep(

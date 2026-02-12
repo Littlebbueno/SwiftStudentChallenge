@@ -41,7 +41,7 @@ struct AttentionVisionView: View {
 //                LandmarksOverlay(points: eyeTracker.rightEyePoints, size: geo.size, color: .yellow)
                 
                 
-                VStack(spacing: 40) {
+                VStack(spacing: 20) {
                     statusIndicator
                     VStack {
                         if assistActive {

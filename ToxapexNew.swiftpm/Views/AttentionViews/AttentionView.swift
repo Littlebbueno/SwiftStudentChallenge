@@ -7,13 +7,30 @@
 import SwiftUI
 
 struct AttentionView: View {
-    @State var attentionMode: Bool = false
     @State var editedMode: Bool = false
     // false == Vision, true == ARKit
     @Environment(\.colorScheme) var colorScheme
     
+    // false = Vision, true = ARKit
+    @AppStorage("assistantModel") var attentionMode: Bool = false
+    
+    // false = off, true = on
+    @AppStorage("acessibilityMode") var acessibilityActivated: Bool = false
+    // false = left, true = right
+    @AppStorage("acessibilityEye") var acessibilityEye: Bool = false
+    
+    @State var eyeChoice: Bool = false
+    @State var acessibilityChoice: Bool = false
     @State var editing: Bool = false
-
+    @State var showAcessibilitySheet : Bool = false
+    
+    init() {
+        let currentMode = UserDefaults.standard.bool(forKey: "acessibilityMode")
+        let currentEye = UserDefaults.standard.bool(forKey: "acessibilityEye")
+        
+        _acessibilityChoice = State(wrappedValue: currentMode)
+        _eyeChoice = State(wrappedValue: currentEye)
+    }
     
     var body: some View {
         ZStack {
@@ -37,6 +54,7 @@ struct AttentionView: View {
             if editing {
                 editingView()
             }
+            
             else{
                 if attentionMode {
                     AttentionARKitView()
@@ -56,73 +74,145 @@ struct AttentionView: View {
         .toolbar{
             ToolbarItem {
                 if self.editing == false {
-                    Button{
-                        self.editing = true
-                        self.editedMode = self.attentionMode
-                    }label:{
-                        HStack(spacing: 4) {
-                            Image(systemName: "pencil")
-                                .font(.caption)
-                            Text("Editar")
-                                .font(.subheadline)
-                                .fontWeight(.medium)
-                        }
-                    }
+                    editingButton()
                 }
             }
         }
     }
     
+    func editingButton() -> some View {
+        Button{
+            withAnimation {
+                self.editing = true
+                self.editedMode = self.attentionMode
+            }
+        }label:{
+            HStack(spacing: 4) {
+                Image(systemName: "pencil")
+                    .font(.caption)
+                Text("Editar")
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+            }
+        }
+    }
+    
     func editingView() -> some View {
-        VStack(spacing: 12) {
-            Spacer()
-            Text(editedMode ? "ARKit Mode" : "Vision Mode")
-                .fontWeight(.semibold)
-                .foregroundStyle(.white.opacity(0.7))
-            Button{
-                editedMode.toggle()
-            }label:{
-                HStack {
-                    Text("Change Mode")
-                        .fontWeight(.semibold)
-                        .padding()
-                        .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity)
+        ZStack {
+            VStack {
+                Spacer()
+                ZStack {
+                    LinearGradient(
+                        stops: [
+                            .init(color: .black, location: 0),
+                            .init(color: .clear, location: 1)
+                        ],
+                        startPoint: .bottom,
+                        endPoint: .top
+                    )
+                }
+                .containerRelativeFrame(.vertical) { length, axis in
+                    length * 0.5
+                }
+            }
+            .ignoresSafeArea()
+            VStack(alignment: .leading, spacing: 12) {
+                Spacer()
+                Button {
+                    showAcessibilitySheet = true
+                }label:{
+                    HStack {
+                        Text("Acessibility Mode")
+                            .fontWeight(.medium)
+                            .foregroundStyle(.white)
+                            .padding(.vertical)
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .foregroundStyle(Color.white)
+                    }
+                    .padding(.horizontal)
                 }
                 .background {
                     ZStack {
-                        RoundedRectangle(cornerRadius: 12)
+                        RoundedRectangle(cornerRadius: 14)
                             .fill(.ultraThinMaterial)
-                        RoundedRectangle(cornerRadius: 12)
-                            .fill(.black.opacity(colorScheme == .light ? 0.3: 0))
+                            .opacity(0.3)
+                        RoundedRectangle(cornerRadius: 14)
+                            .stroke(Color.white.opacity(0.5), lineWidth: 0.5)
                     }
                 }
-            }
-            Button{
-                withAnimation {
-                    attentionMode = editedMode
-                    editing = false
-                }
-            }label:{
-                Text("Save Changes")
-                    .padding(5)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(.black)
+                Button{
+                    editedMode.toggle()
+                }label:{
+                    HStack {
+                        Text("Change Mode:")
+                            .fontWeight(.medium)
+                            .padding(.vertical)
+                            .foregroundStyle(.white)
+                        Text(editedMode ? "ARKit Mode" : "Vision Mode")
+                            .fontWeight(.semibold)
+                            .foregroundStyle(editedMode ? Color("ARColor") : Color("VisionColor"))
+                            .padding(8)
+                        Spacer()
+                    }
+                    .padding(.horizontal)
                     .frame(maxWidth: .infinity)
-            }
-            .tint(.white)
-            .buttonStyle(.glassProminent)
-            Button{
-                withAnimation {
-                    editing = false
                 }
-            }label:{
-                Text("Cancel")
-                    .fontWeight(.semibold)
-                    .foregroundStyle(.red)
+                .background {
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 14)
+                            .fill(.ultraThinMaterial)
+                            .opacity(0.3)
+                        RoundedRectangle(cornerRadius: 14)
+                            .stroke(Color.white.opacity(0.5), lineWidth: 0.5)
+                    }
+                }
+                Button{
+                    withAnimation {
+                        attentionMode = editedMode
+                        self.acessibilityActivated = self.acessibilityChoice
+                        self.acessibilityEye = self.eyeChoice
+                        editing = false
+                    }
+                }label:{
+                    Text("Save")
+                        .padding(5)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(.black)
+                        .frame(maxWidth: .infinity)
+                }
+                .padding(.top, 12)
+                .tint(.white)
+                .buttonStyle(.glassProminent)
             }
-            
+            .sheet(isPresented: $showAcessibilitySheet){
+                AcessiblitySheetView(acessibilityChoice: self.$acessibilityChoice, eyeChoice: self.$eyeChoice)
+                    .presentationDetents([.medium])
+            }
+            .padding()
         }
-        .padding()
+        .transition(.move(edge: .bottom).combined(with: .opacity))
+
+        .toolbar {
+            ToolbarItem(placement: .cancellationAction) {
+                Button{
+                    withAnimation {
+                        editing = false
+                    }
+                    self.acessibilityChoice = self.acessibilityActivated
+                    self.eyeChoice = self.acessibilityEye
+                }label:{
+                    Image(systemName: "xmark")
+                        .fontWeight(.semibold)
+                }
+            }
+        }
+    }
+}
+
+#Preview {
+    NavigationStack {
+        AttentionView()
+            .preferredColorScheme(.dark)
     }
 }
