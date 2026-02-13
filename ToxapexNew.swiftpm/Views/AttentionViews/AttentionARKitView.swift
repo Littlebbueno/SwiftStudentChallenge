@@ -9,123 +9,125 @@ import AVFoundation
 
 struct AttentionARKitView: View {
     
-    @State private var eyeTracker = ARFaceManager()
+    @State var eyeTracker : ARFaceManager
+    @Binding var playing: Bool
+    // Timer variaveis
+    let timer = Timer.publish(every: 0.1, on: .main, in: .common).autoconnect()
+    @State private var closedFramesCounter: Int = 0
+    @State private var isDrowsy: Bool = false
     
-    @State private var timer: Timer?
-    let intervalo: TimeInterval = 3
+    //
     let synthesizer = AVSpeechSynthesizer()
     
     @State private var assistActive: Bool = false
     @Environment(\.colorScheme) var colorScheme
     
     @State private var previewCameraActive: Bool = false
-    
+    @State private var showAlertCamera: Bool = false
     var body: some View {
-        GeometryReader { geo in
-            ZStack {
-                if previewCameraActive {
+        ZStack {
+            VStack(spacing: 0) {
+                Spacer()
+                ZStack(alignment: .top) {
                     ARCameraView(session: eyeTracker.session)
                         .containerRelativeFrame(.horizontal){ lenght, axis in
-                            lenght * 0.4
+                            lenght * 0.35
                         }
                         .containerRelativeFrame(.vertical){ lenght, axis in
-                            lenght * 0.4
+                            lenght * 0.35
+                            
                         }
                         .cornerRadius(20)
-                }
-                
-                
-                VStack(spacing: 20) {
-                    statusIndicator
-                    VStack {
-                        if assistActive {
-                            Button{
-                                self.previewCameraActive.toggle()
-                            }label:{
-                                Image(systemName: previewCameraActive == true ? "video.slash" : "video")
-                                    .foregroundStyle(Color("AccentColor"))
-                                    .frame(height: 20)
-                            }
-                            .tint(Color.white)
-                            .buttonStyle(.glassProminent)
+                        .opacity(previewCameraActive ? 0.6 : 0.0)
+                        .background {
+                            RoundedRectangle(cornerRadius: 20)
+                                .fill(Color.black.opacity(previewCameraActive ? 1 : 0.0))
                         }
-                        informativePart
-                    }
-                    .padding()
-                    Spacer()
-                    if self.assistActive {
-                        buttonCloseAssistant
-                            .padding()
-                    }else{
-                        buttonPlayAssistant
-                            .padding()
-                    }
-                }
-                .padding(.top, 50)
-            }
-            .onChange(of: eyeTracker.eyeStatus) { _, eyeStatus in
-                if assistActive {
-                    if eyeStatus != .opened {
-                        startTimer()
-                    }
-                    else {
-                        stopTimer()
+                    if assistActive {
+                        Button{
+                            self.previewCameraActive.toggle()
+                        }label:{
+                            Image(systemName: previewCameraActive == true ? "video.slash" : "video")
+                                .foregroundStyle(Color("AccentColor"))
+                                .frame(height: 20)
+                        }
+                        .padding()
+                        .tint(Color.white)
+                        .buttonStyle(.glassProminent)
                     }
                 }
-            }
-            .onChange(of: self.assistActive) { _, attentionAssist in
-                if attentionAssist {
-                    eyeTracker.start()
-                } else {
-                    stopTimer()
-                    eyeTracker.stop()
+                .padding(.bottom, 100)
+                if self.assistActive {
+                    buttonCloseAssistant
+                        .padding(30)
+                }else{
+                    buttonPlayAssistant
+                        .padding(.horizontal)
+                        .padding(.bottom, 20)
+                        .padding(.top, 8)
                 }
             }
-            .onDisappear{
-                if assistActive {
-                    self.assistActive = false
+            .padding(.top, 20)
+        }
+        .onReceive(timer) { _ in
+            guard assistActive else {
+                if closedFramesCounter != 0 { closedFramesCounter = 0 }
+                return
+            }
+
+            if eyeTracker.eyeStatus != .opened {
+                if closedFramesCounter < 30 {
+                    closedFramesCounter += 1
                 }
+            } else {
+                closedFramesCounter = max(0, closedFramesCounter - 2)
+            }
+
+            if closedFramesCounter >= 30 && !isDrowsy {
+                isDrowsy = true
+                wakeUpSound()
+            } else if closedFramesCounter == 0 && isDrowsy {
+                isDrowsy = false
+                synthesizer.stopSpeaking(at: .immediate)
+            }
+        }
+        .alert("Camera Access Required", isPresented: $showAlertCamera) {
+            Button("Open Settings") {
+                if let settingsUrl = URL(string: UIApplication.openSettingsURLString) {
+                    UIApplication.shared.open(settingsUrl)
+                }
+            }
+            Button("Cancel", role: .cancel) { }
+        } message: {
+            Text("To monitor your attention and keep you safe while driving, the assistant needs access to the camera.")
+        }
+        .onChange(of: self.assistActive) { _, attentionAssist in
+            if attentionAssist {
+                eyeTracker.start()
+            } else {
+                eyeTracker.stop()
+            }
+        }
+        .onDisappear{
+            if assistActive {
+                self.assistActive = false
             }
         }
         .navigationTitle("Attention Assistant")
         .navigationBarTitleDisplayMode(.inline)
     }
     
-    var informativePart: some View {
-        VStack {
-            if eyeTracker.eyeStatus == .nofaceDetected {
-                Text("NO FACE DETECTED")
-                    .font(.system(size: 24, weight: .bold))
-                    .foregroundColor(Color("NoFaceDetected2"))
-                
-                Text("For best results, securely mount your phone and keep your face centered. Ensure there is adequate lighting for face detection.")
-                    .font(.caption)
-            }else {
-                Text(eyeTracker.eyeStatus == .closed ? "EYES CLOSED" : "EYES OPEN")
-                    .font(.system(size: 24, weight: .bold))
-                    .foregroundColor(eyeTracker.eyeStatus == .closed ? Color("ClosedEyes2") : Color("OpenEyes2"))
-                
-                Text("Keep the device securely in place on the dashboard.")
-                    .font(.caption)
-            }
-        }
-        .padding()
-        .background(
-            ZStack {
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(.ultraThinMaterial)
-                RoundedRectangle(cornerRadius: 16)
-                    .foregroundStyle(Color("CinzaCards").opacity(colorScheme == .light ? 0.3: 0.0))
-            }
-            
-                
-        )
-    }
     var buttonPlayAssistant: some View {
         Button{
-            withAnimation {
-                self.assistActive = true
-                self.previewCameraActive = true
+            if checkCameraPermission() {
+                withAnimation {
+                    self.assistActive = true
+                    self.previewCameraActive = true
+                    self.playing = true
+                }
+            }
+            else {
+                self.showAlertCamera = true
             }
         }label:{
             HStack {
@@ -136,6 +138,7 @@ struct AttentionARKitView: View {
                     .foregroundStyle(Color.black)
                     .fontWeight(.semibold)
             }
+            .dynamicTypeSize(...DynamicTypeSize.xLarge)
             .frame(maxWidth: .infinity)
 
         }
@@ -148,7 +151,11 @@ struct AttentionARKitView: View {
             withAnimation {
                 self.assistActive = false
                 self.previewCameraActive = false
+                self.playing = false
+
             }
+            self.isDrowsy = false
+            self.synthesizer.stopSpeaking(at: .immediate)
             Task {
                 try? await Task.sleep(nanoseconds: 200_000_000)
                 self.eyeTracker.eyeStatus = .nofaceDetected
@@ -159,57 +166,39 @@ struct AttentionARKitView: View {
                 Text("Close Assistant")
                     .font(.headline)
             }
+            .dynamicTypeSize(...DynamicTypeSize.xLarge)
             .foregroundColor(Color("SevereAccident"))
             .frame(maxWidth: .infinity)
 
         }
     }
     
-    var statusIndicator: some View {
-        if eyeTracker.eyeStatus == .nofaceDetected {
-            Circle()
-                .foregroundStyle(Color("NoFaceDetected").gradient)
-                .frame(width: 120, height: 120)
-                .overlay(
-                    Image(systemName: "xmark.circle")
-                        .foregroundColor(.white)
-                        .font(.system(size: 50))
-                )
-        }else {
-            Circle()
-                .foregroundStyle((eyeTracker.eyeStatus == .closed ? Color.red : Color("OpenEyes")).gradient)
-                .frame(width: 120, height: 120)
-                .overlay(
-                    Image(systemName: eyeTracker.eyeStatus == .closed ? "xmark.circle" : "checkmark.circle")
-                        .foregroundColor(.white)
-                        .font(.system(size: 50))
-                )
-        }
-    }
-    
-    func falarPergunta() {
+    func wakeUpSound() {
+        AudioServicesPlaySystemSound(1005)
         let mensagem = "Are you awake?"
         let utterance = AVSpeechUtterance(string: mensagem)
         utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
-        utterance.rate = 0.5
+        utterance.rate = 0.5 // Velocidade da fala
+        utterance.volume = 1.0
 
         synthesizer.speak(utterance)
+        
+        try? AVAudioSession.sharedInstance().setActive(true)
         print("Pergunta emitida: \(Date())")
     }
     
-    func startTimer() {
-        timer?.invalidate()
-        timer = nil
-        timer = Timer.scheduledTimer(withTimeInterval: intervalo, repeats: true) { _ in
-            Task {
-                await falarPergunta()
-            }
+    func checkCameraPermission() -> Bool{
+        let status = AVCaptureDevice.authorizationStatus(for: .video)
+        
+        switch status {
+        case .authorized:
+            return true
+        case .notDetermined:
+            return false
+        case .denied, .restricted:
+            return false
+        @unknown default:
+            return false
         }
-    }
-
-    func stopTimer() {
-        timer?.invalidate()
-        timer = nil
-        synthesizer.stopSpeaking(at: .immediate)
     }
 }

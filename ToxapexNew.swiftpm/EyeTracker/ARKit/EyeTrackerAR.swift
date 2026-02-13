@@ -10,9 +10,9 @@ class ARFaceManager: NSObject, ARSessionDelegate {
     private let sampleLimit = 8
     
     
-    let isAcessibilityOn = UserDefaults.standard.bool(forKey: "acessibilityMode")
+    var isAcessibilityOn = UserDefaults.standard.bool(forKey: "acessibilityMode")
     // false = left, true = right
-    let whichEye = UserDefaults.standard.bool(forKey: "acessibilityEye")
+    var whichEye = UserDefaults.standard.bool(forKey: "acessibilityEye")
     
     let session = ARSession()
     
@@ -25,7 +25,6 @@ class ARFaceManager: NSObject, ARSessionDelegate {
         guard ARFaceTrackingConfiguration.isSupported else { return }
         let config = ARFaceTrackingConfiguration()
         config.maximumNumberOfTrackedFaces = 1
-        
         config.isLightEstimationEnabled = false
         session.run(config, options: [.resetTracking, .removeExistingAnchors, .stopTrackedRaycasts])
     }
@@ -94,5 +93,10 @@ class ARFaceManager: NSObject, ARSessionDelegate {
         if self.eyeStatus != newStatus {
             self.eyeStatus = newStatus
         }
+    }
+    
+    func reloadSettings() {
+        self.isAcessibilityOn = UserDefaults.standard.bool(forKey: "acessibilityMode")
+        self.whichEye = UserDefaults.standard.bool(forKey: "acessibilityEye")
     }
 }

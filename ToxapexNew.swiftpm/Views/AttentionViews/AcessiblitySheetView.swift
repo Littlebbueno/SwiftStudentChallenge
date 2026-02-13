@@ -10,9 +10,19 @@ import SwiftUI
 struct AcessiblitySheetView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) var colorScheme
-
-    @Binding var acessibilityChoice: Bool
-    @Binding var eyeChoice: Bool
+    
+    // false = off, true = on
+    @AppStorage("acessibilityMode") var acessibilityActivated: Bool = false
+    // false = left, true = right
+    @AppStorage("acessibilityEye") var acessibilityEye: Bool = false
+    
+    @State var eyeChoice: Bool = false
+    @State var acessibilityChoice: Bool = false
+    
+    init() {
+        self._acessibilityChoice = State(initialValue: acessibilityActivated)
+        self._eyeChoice = State(initialValue: acessibilityEye)
+    }
     
     var body: some View {
         VStack(alignment: .center, spacing: 25) {
@@ -43,9 +53,11 @@ struct AcessiblitySheetView: View {
             Spacer()
             
             Button {
+                self.acessibilityActivated = self.acessibilityChoice
+                self.acessibilityEye = self.eyeChoice
                 dismiss()
             } label: {
-                Text("Feito")
+                Text("Done")
                     .padding(14)
                     .fontWeight(.bold)
                     .foregroundStyle(colorScheme == .dark ? .black : .white)

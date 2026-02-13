@@ -10,15 +10,15 @@ struct MyApp: App {
                     TravelView(immediateEmergencies: emergencyManager.immediateEmergencies, roadWeatherEmergencies: emergencyManager.roadWeatherEmergencies, vehicleEmergencies: emergencyManager.vehicleEmergencies)
 //                            .preferredColorScheme(ColorScheme.dark)
                 }
-                    .tabItem {
-                        Label("Emergencies", systemImage: "light.beacon.max.fill")
-                    }
+                .tabItem {
+                    Label("Emergencies", systemImage: "light.beacon.max.fill")
+                }
                 NavigationStack {
                     AttentionView()
                 }
-                    .tabItem {
-                        Label("Attention", systemImage: "road.lanes.curved.left")
-                    }
+                .tabItem {
+                    Label("Attention", systemImage: "road.lanes.curved.left")
+                }
                 NavigationStack {
                     ResourcesView()
                 }

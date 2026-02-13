@@ -5,33 +5,35 @@
 //  Created by Marco Bueno on 02/02/26.
 //
 import SwiftUI
+import AVFoundation
 
 struct AttentionView: View {
+    @State var eyeTracker = ARFaceManager()
+    @State var eyeTrackerVision = EyeTracker()
+
     @State var editedMode: Bool = false
     // false == Vision, true == ARKit
     @Environment(\.colorScheme) var colorScheme
     
     // false = Vision, true = ARKit
     @AppStorage("assistantModel") var attentionMode: Bool = false
+    @State private var showAcessibilitySheet: Bool = false
+    @State private var showAssistantOnboarding: Bool = false
+    @State var playing: Bool = false
+    @AppStorage("firstOnboarding") var firstOnboarding: Bool = true
     
     // false = off, true = on
     @AppStorage("acessibilityMode") var acessibilityActivated: Bool = false
     // false = left, true = right
     @AppStorage("acessibilityEye") var acessibilityEye: Bool = false
     
-    @State var eyeChoice: Bool = false
-    @State var acessibilityChoice: Bool = false
-    @State var editing: Bool = false
-    @State var showAcessibilitySheet : Bool = false
-    
-    init() {
-        let currentMode = UserDefaults.standard.bool(forKey: "acessibilityMode")
-        let currentEye = UserDefaults.standard.bool(forKey: "acessibilityEye")
-        
-        _acessibilityChoice = State(wrappedValue: currentMode)
-        _eyeChoice = State(wrappedValue: currentEye)
+    var eyeTrackerToCheck: eyeStatus {
+        attentionMode ? eyeTracker.eyeStatus : eyeTrackerVision.eyeStatus
     }
-    
+
+    init() {
+        setupAudioSession()
+    }
     var body: some View {
         ZStack {
             Image("imageExample2")
@@ -51,161 +53,201 @@ struct AttentionView: View {
                 endPoint: .top
             )
             .ignoresSafeArea()
-            if editing {
-                editingView()
+            VStack(spacing: 16) {
+                statusIndicator
+                informativePart
+                Spacer()
             }
+            .padding(.top, 15)
+            .padding(.horizontal)
             
-            else{
-                if attentionMode {
-                    AttentionARKitView()
-                }else{
-                    AttentionVisionView()
-                }
-                VStack {
-                    Spacer()
-                    Text(attentionMode ? "ARKit Mode" : "Vision Mode")
-                        .font(.headline)
-                        .foregroundStyle(.white.opacity(0.7))
-                        .offset(y: -80)
-                }
+            if attentionMode {
+                AttentionARKitView(eyeTracker: self.eyeTracker, playing: self.$playing)
+            }else{
+                AttentionVisionView(eyeTracker: self.eyeTrackerVision, playing: self.$playing)
             }
-            
-        }
-        .toolbar{
-            ToolbarItem {
-                if self.editing == false {
-                    editingButton()
-                }
-            }
-        }
-    }
-    
-    func editingButton() -> some View {
-        Button{
-            withAnimation {
-                self.editing = true
-                self.editedMode = self.attentionMode
-            }
-        }label:{
-            HStack(spacing: 4) {
-                Image(systemName: "pencil")
-                    .font(.caption)
-                Text("Editar")
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-            }
-        }
-    }
-    
-    func editingView() -> some View {
-        ZStack {
             VStack {
                 Spacer()
-                ZStack {
-                    LinearGradient(
-                        stops: [
-                            .init(color: .black, location: 0),
-                            .init(color: .clear, location: 1)
-                        ],
-                        startPoint: .bottom,
-                        endPoint: .top
-                    )
-                }
-                .containerRelativeFrame(.vertical) { length, axis in
-                    length * 0.5
-                }
-            }
-            .ignoresSafeArea()
-            VStack(alignment: .leading, spacing: 12) {
-                Spacer()
-                Button {
-                    showAcessibilitySheet = true
-                }label:{
+                if self.playing == false {
                     HStack {
-                        Text("Acessibility Mode")
-                            .fontWeight(.medium)
-                            .foregroundStyle(.white)
-                            .padding(.vertical)
-                        Spacer()
-                        Image(systemName: "chevron.right")
-                            .foregroundStyle(Color.white)
+                        buttonAcessibility
+                        buttonExtra
                     }
+                    .padding(.bottom, 80)
                     .padding(.horizontal)
                 }
-                .background {
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 14)
-                            .fill(.ultraThinMaterial)
-                            .opacity(0.3)
-                        RoundedRectangle(cornerRadius: 14)
-                            .stroke(Color.white.opacity(0.5), lineWidth: 0.5)
-                    }
-                }
-                Button{
-                    editedMode.toggle()
-                }label:{
-                    HStack {
-                        Text("Change Mode:")
-                            .fontWeight(.medium)
-                            .padding(.vertical)
-                            .foregroundStyle(.white)
-                        Text(editedMode ? "ARKit Mode" : "Vision Mode")
-                            .fontWeight(.semibold)
-                            .foregroundStyle(editedMode ? Color("ARColor") : Color("VisionColor"))
-                            .padding(8)
-                        Spacer()
-                    }
-                    .padding(.horizontal)
-                    .frame(maxWidth: .infinity)
-                }
-                .background {
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 14)
-                            .fill(.ultraThinMaterial)
-                            .opacity(0.3)
-                        RoundedRectangle(cornerRadius: 14)
-                            .stroke(Color.white.opacity(0.5), lineWidth: 0.5)
-                    }
-                }
-                Button{
-                    withAnimation {
-                        attentionMode = editedMode
-                        self.acessibilityActivated = self.acessibilityChoice
-                        self.acessibilityEye = self.eyeChoice
-                        editing = false
-                    }
-                }label:{
-                    Text("Save")
-                        .padding(5)
-                        .fontWeight(.semibold)
-                        .foregroundStyle(.black)
-                        .frame(maxWidth: .infinity)
-                }
-                .padding(.top, 12)
-                .tint(.white)
-                .buttonStyle(.glassProminent)
             }
-            .sheet(isPresented: $showAcessibilitySheet){
-                AcessiblitySheetView(acessibilityChoice: self.$acessibilityChoice, eyeChoice: self.$eyeChoice)
-                    .presentationDetents([.medium])
-            }
-            .padding()
+            Color.black
+                .ignoresSafeArea()
+                .opacity(self.playing ? 0.4 : 0)
+            
         }
-        .transition(.move(edge: .bottom).combined(with: .opacity))
-
-        .toolbar {
-            ToolbarItem(placement: .cancellationAction) {
-                Button{
-                    withAnimation {
-                        editing = false
-                    }
-                    self.acessibilityChoice = self.acessibilityActivated
-                    self.eyeChoice = self.acessibilityEye
-                }label:{
-                    Image(systemName: "xmark")
-                        .fontWeight(.semibold)
+        .onAppear {
+            if self.firstOnboarding {
+                Task {
+                    try? await Task.sleep(nanoseconds: 1_000_000_000)
+                    
+                    self.showAssistantOnboarding = true
                 }
             }
+        }
+        .onChange(of: self.showAcessibilitySheet) { older, _ in
+            print("deu certo 1")
+            self.eyeTracker.reloadSettings()
+            self.eyeTrackerVision.reloadSettings()
+        }
+        .sheet(isPresented: $showAcessibilitySheet){
+            AcessiblitySheetView()
+                .presentationCornerRadius(35)
+        }
+        .sheet(isPresented: $showAssistantOnboarding){
+            AssistantOnboardingView()
+                .presentationCornerRadius(35)
+        }
+        .toolbar{
+            ToolbarItem(placement: .primaryAction){
+                Button{
+                    self.showAssistantOnboarding = true
+                }label: {
+                    Image(systemName: "info.circle")
+                }
+            }
+        }
+        .toolbarVisibility(self.playing ? .hidden : .visible, for: .tabBar)
+    }
+    
+    var informativePart: some View {
+        VStack {
+            
+            if eyeTrackerToCheck == .nofaceDetected {
+                Text("NO FACE DETECTED")
+                    .font(.system(size: 24, weight: .bold))
+                    .foregroundColor(Color("NoFaceDetected2"))
+                
+                Text("For best results, securely mount your phone and keep your face centered. Ensure there is adequate lighting for face detection.")
+                    .dynamicTypeSize(...DynamicTypeSize.xxLarge)
+                    .font(.caption)
+                    .fontWeight(.medium)
+            }else {
+                Text(eyeTrackerToCheck == .closed ? "EYES CLOSED" : "EYES OPEN")
+                    .font(.system(size: 24, weight: .bold))
+                    .foregroundColor(eyeTrackerToCheck == .closed ? Color("ClosedEyes2") : Color("OpenEyes2"))
+                
+                Text("Keep the device securely in place on the dashboard.")
+                    .dynamicTypeSize(...DynamicTypeSize.xxLarge)
+                    .font(.caption)
+                    .fontWeight(.medium)
+
+            }
+        }
+        .padding()
+        .background(
+            ZStack {
+                RoundedRectangle(cornerRadius: 16)
+                    .fill(.ultraThinMaterial)
+                RoundedRectangle(cornerRadius: 16)
+                    .foregroundStyle(Color("CinzaCards").opacity(colorScheme == .light ? 0.3: 0.0))
+            }
+                
+        )
+    }
+    
+    var statusIndicator: some View {
+        if eyeTrackerToCheck == .nofaceDetected {
+            Circle()
+                .foregroundStyle(Color("NoFaceDetected").gradient)
+                .frame(width: 115, height: 115)
+                .overlay(
+                    Image(systemName: "xmark.circle")
+                        .foregroundColor(.white)
+                        .font(.system(size: 50))
+                )
+        }else {
+            Circle()
+                .foregroundStyle((eyeTrackerToCheck == .closed ? Color.red : Color("OpenEyes")).gradient)
+                .frame(width: 115, height: 115)
+                .overlay(
+                    Image(systemName: eyeTrackerToCheck == .closed ? "xmark.circle" : "checkmark.circle")
+                        .foregroundColor(.white)
+                        .font(.system(size: 50))
+                )
+        }
+    }
+    
+    var buttonExtra: some View {
+        Button {
+            withAnimation {
+                self.attentionMode.toggle()
+            }
+        }label:{
+            HStack(spacing: 6) {
+                Image(systemName: attentionMode ? "moon.fill" : "sun.max")
+                    .foregroundStyle(.white)
+                Text(attentionMode ? "Night Mode" : "Day Mode")
+                    .font(.footnote)
+                    .fontWeight(.medium)
+                    .foregroundStyle(.white)
+                    .padding(.vertical, 12)
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .font(.caption2)
+                    .foregroundStyle(Color.white.opacity(0.6))
+            }
+            .padding(.horizontal, 8)
+        }
+        .background {
+            ZStack {
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(.ultraThinMaterial)
+                    .opacity(0.3)
+                RoundedRectangle(cornerRadius: 8)
+                    .foregroundStyle(self.attentionMode ? Color("Medical") : Color("VehicleFire2"))
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(Color.white.opacity(0.3), lineWidth: 0.5)
+            }
+        }
+    }
+    var buttonAcessibility: some View {
+        Button {
+            showAcessibilitySheet = true
+        }label:{
+            HStack(spacing: 6) {
+                Image(systemName: "accessibility.fill")
+                    .foregroundStyle(.white)
+                Text("Acessibility")
+                    .font(.footnote)
+                    .fontWeight(.medium)
+                    .foregroundStyle(.white)
+                    .padding(.vertical, 12)
+                Spacer()
+                Image(systemName: "chevron.right")
+                    .font(.caption2)
+                    .foregroundStyle(Color.white.opacity(0.6))
+            }
+            .padding(.horizontal, 8)
+        }
+        .background {
+            ZStack {
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(.ultraThinMaterial)
+                    .opacity(0.3)
+                RoundedRectangle(cornerRadius: 8)
+                    .foregroundStyle(self.acessibilityActivated ? Color("OpenEyes") : .clear)
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(Color.white.opacity(0.3), lineWidth: 0.5)
+            }
+        }
+    }
+    func setupAudioSession() {
+        do {
+            try AVAudioSession.sharedInstance().setCategory(
+                .playback,
+                mode: .moviePlayback,
+                options: [.duckOthers, .interruptSpokenAudioAndMixWithOthers]
+            )
+            try AVAudioSession.sharedInstance().setActive(true)
+        } catch {
+            print("Erro ao configurar áudio: \(error)")
         }
     }
 }

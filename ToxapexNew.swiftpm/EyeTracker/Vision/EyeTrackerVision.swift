@@ -19,9 +19,9 @@ enum eyeStatus {
 class EyeTracker{
     var eyeStatus: eyeStatus = .nofaceDetected
     
-    let isAcessibilityOn = UserDefaults.standard.bool(forKey: "acessibilityMode")
+    var isAcessibilityOn = UserDefaults.standard.bool(forKey: "acessibilityMode")
     // false = left, true = right
-    let whichEye = UserDefaults.standard.bool(forKey: "acessibilityEye")
+    var whichEye = UserDefaults.standard.bool(forKey: "acessibilityEye")
     
     var leftEyePoints: [CGPoint] = []
     var rightEyePoints: [CGPoint] = []
@@ -101,5 +101,10 @@ class EyeTracker{
     // Pitagoras
     private func distance(_ p1: CGPoint, _ p2: CGPoint) -> CGFloat {
         return sqrt(pow(p2.x - p1.x, 2) + pow(p2.y - p1.y, 2))
+    }
+    
+    func reloadSettings() {
+        self.isAcessibilityOn = UserDefaults.standard.bool(forKey: "acessibilityMode")
+        self.whichEye = UserDefaults.standard.bool(forKey: "acessibilityEye")
     }
 }
