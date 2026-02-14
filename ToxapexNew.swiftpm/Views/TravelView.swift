@@ -111,15 +111,15 @@ struct TravelView: View {
             }
             .searchable(text: self.$searchText ,placement: .automatic , prompt: "Search")
             .navigationTitle("Travel")
-            .toolbar {
-                ToolbarItem(placement: .primaryAction){
-                    Button{
-                        self.showDescriptionApp = true
-                    }label: {
-                        Image(systemName: "info.circle")
-                    }
-                }
-            }
+//            .toolbar {
+//                ToolbarItem(placement: .primaryAction){
+//                    Button{
+//                        self.showDescriptionApp = true
+//                    }label: {
+//                        Image(systemName: "info.circle")
+//                    }
+//                }
+//            }
             .sheet(isPresented: $showDescriptionApp) {
                 NavigationStack {
                     DescriptionAppView()

@@ -214,7 +214,7 @@ struct AttentionView: View {
             HStack(spacing: 6) {
                 Image(systemName: "accessibility.fill")
                     .foregroundStyle(.white)
-                Text("Acessibility")
+                Text("Accessibility")
                     .font(.footnote)
                     .fontWeight(.medium)
                     .foregroundStyle(.white)

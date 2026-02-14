@@ -55,6 +55,21 @@ struct AttentionARKitView: View {
                         .tint(Color.white)
                         .buttonStyle(.glassProminent)
                     }
+                    ZStack {
+                        circleBadge(number: "1")
+                            .scaleEffect(closedFramesCounter >= 10 ? 1.0 : 0.5)
+                            .opacity(closedFramesCounter >= 10 ? 1.0 : 0.0)
+                        
+                        circleBadge(number: "2")
+                            .scaleEffect(closedFramesCounter >= 20 ? 1.0 : 0.5)
+                            .opacity(closedFramesCounter >= 20 ? 1.0 : 0.0)
+                        
+                        circleBadge(number: "3")
+                            .scaleEffect(closedFramesCounter >= 30 ? 1.0 : 0.5)
+                            .opacity(closedFramesCounter >= 30 ? 1.0 : 0.0)
+                    }
+                    .animation(.interpolatingSpring(stiffness: 100, damping: 10), value: closedFramesCounter)
+                    .offset(y: -40)
                 }
                 .padding(.bottom, 100)
                 if self.assistActive {
@@ -76,14 +91,14 @@ struct AttentionARKitView: View {
             }
 
             if eyeTracker.eyeStatus != .opened {
-                if closedFramesCounter < 30 {
+                if closedFramesCounter < 35 {
                     closedFramesCounter += 1
                 }
             } else {
                 closedFramesCounter = max(0, closedFramesCounter - 2)
             }
 
-            if closedFramesCounter >= 30 && !isDrowsy {
+            if closedFramesCounter >= 35 && !isDrowsy {
                 isDrowsy = true
                 wakeUpSound()
             } else if closedFramesCounter == 0 && isDrowsy {
@@ -134,7 +149,7 @@ struct AttentionARKitView: View {
                 Image(systemName:"play.fill")
                     .foregroundStyle(.black)
                 Text("Start Assistant")
-                    .padding(5)
+                    .padding(6)
                     .foregroundStyle(Color.black)
                     .fontWeight(.semibold)
             }

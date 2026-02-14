@@ -12,7 +12,7 @@ struct CPRAnimationView: View {
     @State private var counter = 0
     let bpmInterval = 60.0 / 110.0
     
-    let timer = Timer.publish(every: 0.54545, on: .main, in: .common).autoconnect()
+    let timer = Timer.publish(every: 60.0 / 110.0, on: .main, in: .common).autoconnect()
 //    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
     @State private var audioPlayer: AVAudioPlayer!
@@ -45,9 +45,12 @@ struct CPRAnimationView: View {
             }
         }
         .onAppear {
-            setupAudio()
-            audioPlayer.numberOfLoops = -1
-            audioPlayer.play()
+            Task {
+                try? await Task.sleep(nanoseconds: 200_000_000)
+                setupAudio()
+                audioPlayer.numberOfLoops = -1
+                audioPlayer.play()
+            }
         }
         .onReceive(timer) { _ in
 //            let duration = Date.now.timeIntervalSince(lastTick)

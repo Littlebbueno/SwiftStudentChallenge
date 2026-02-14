@@ -26,7 +26,7 @@ struct AcessiblitySheetView: View {
     
     var body: some View {
         VStack(alignment: .center, spacing: 25) {
-            Text("Acessibility Settings")
+            Text("Accessibility Settings")
                 .font(.headline)
             
             Text("Hello, here you can configure your attention assistant to your need.")
@@ -58,16 +58,16 @@ struct AcessiblitySheetView: View {
                 dismiss()
             } label: {
                 Text("Done")
-                    .padding(14)
+                    .padding(.vertical, 8)
                     .fontWeight(.bold)
-                    .foregroundStyle(colorScheme == .dark ? .black : .white)
-                    .frame(maxWidth: .infinity)
+                    .foregroundStyle(.white)
+                    .containerRelativeFrame(.horizontal) { length, axis in
+                        0.5 * length
+                    }
                     
             }
-            .background {
-                LinearGradient(colors: [Color("NoFaceDetected2"), colorScheme == .dark ? Color("OpenEyes2") : Color.pink], startPoint: .leading, endPoint: .trailing)
-            }
-            .cornerRadius(40)
+            .tint(Color("AccentColor2"))
+            .buttonStyle(.glassProminent)
         }
         .padding(30)
     }
