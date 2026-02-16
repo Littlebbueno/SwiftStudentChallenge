@@ -27,6 +27,8 @@ struct AttentionView: View {
     // false = left, true = right
     @AppStorage("acessibilityEye") var acessibilityEye: Bool = false
     
+    @Environment(\.scenePhase) var scenePhase
+
     var eyeTrackerToCheck: eyeStatus {
         attentionMode ? eyeTracker.eyeStatus : eyeTrackerVision.eyeStatus
     }
@@ -82,6 +84,21 @@ struct AttentionView: View {
                 .opacity(self.playing ? 0.4 : 0)
             
         }
+        //para o celular não desligar durante a viagem por falta de interação.
+        .onAppear {
+            UIApplication.shared.isIdleTimerDisabled = true
+        }
+        .onDisappear {
+            UIApplication.shared.isIdleTimerDisabled = false
+        }
+        .onChange(of: scenePhase) { oldPhase, newPhase in
+            if newPhase == .active {
+                UIApplication.shared.isIdleTimerDisabled = true
+            } else {
+                UIApplication.shared.isIdleTimerDisabled = false
+            }
+        }
+        //
         .onAppear {
             if self.firstOnboarding {
                 Task {
@@ -181,7 +198,7 @@ struct AttentionView: View {
             }
         }label:{
             HStack(spacing: 6) {
-                Image(systemName: attentionMode ? "moon.fill" : "sun.max")
+                Image(systemName: attentionMode ? "moon.fill" : "sun.max.fill")
                     .foregroundStyle(.white)
                 Text(attentionMode ? "Night Mode" : "Day Mode")
                     .font(.footnote)

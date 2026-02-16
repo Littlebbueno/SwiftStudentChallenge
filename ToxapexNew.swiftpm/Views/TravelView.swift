@@ -43,7 +43,8 @@ struct TravelView: View {
     }
     
     @State private var animateGradient = false
-    
+    let impact = UIImpactFeedbackGenerator(style: .light)
+
     var body: some View {
         ZStack {
             Color(.systemGroupedBackground)
@@ -109,7 +110,7 @@ struct TravelView: View {
                     
                 }
             }
-            .searchable(text: self.$searchText ,placement: .automatic , prompt: "Search")
+            .searchable(text: self.$searchText ,placement: .automatic , prompt: "Search emergencies")
             .navigationTitle("Travel")
 //            .toolbar {
 //                ToolbarItem(placement: .primaryAction){
@@ -173,7 +174,6 @@ struct TravelView: View {
                             .opacity(0.8)
                     }
                 }
-                    
             }
         }
     }

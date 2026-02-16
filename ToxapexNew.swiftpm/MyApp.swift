@@ -27,5 +27,6 @@ struct MyApp: App {
                 }
             }
         }
+        .modelContainer(for: ContactModel.self)
     }
 }

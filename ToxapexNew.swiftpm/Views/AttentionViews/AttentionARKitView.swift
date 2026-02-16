@@ -56,15 +56,15 @@ struct AttentionARKitView: View {
                         .buttonStyle(.glassProminent)
                     }
                     ZStack {
-                        circleBadge(number: "1")
+                        circleAlert(number: "1")
                             .scaleEffect(closedFramesCounter >= 10 ? 1.0 : 0.5)
                             .opacity(closedFramesCounter >= 10 ? 1.0 : 0.0)
                         
-                        circleBadge(number: "2")
+                        circleAlert(number: "2")
                             .scaleEffect(closedFramesCounter >= 20 ? 1.0 : 0.5)
                             .opacity(closedFramesCounter >= 20 ? 1.0 : 0.0)
                         
-                        circleBadge(number: "3")
+                        circleAlert(number: "3")
                             .scaleEffect(closedFramesCounter >= 30 ? 1.0 : 0.5)
                             .opacity(closedFramesCounter >= 30 ? 1.0 : 0.0)
                     }

@@ -11,7 +11,7 @@ struct EmergencyView: View {
     var emergency: Emergency
     @State private var currentStepIndex = 0
     @Environment(\.dismiss) private var dismiss
-    
+    let impact = UIImpactFeedbackGenerator(style: .light)
     @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
@@ -65,6 +65,7 @@ struct EmergencyView: View {
             .navigationBarTitleDisplayMode(.inline)
             .safeAreaInset(edge: .bottom) {
                 Button{
+                    impact.impactOccurred()
                     if currentStepIndex < emergency.steps.count - 1 {
                         withAnimation {
                             currentStepIndex += 1
@@ -103,14 +104,16 @@ struct EmergencyView: View {
                         .foregroundStyle(index == currentStepIndex ? colorText: .primary)
                         .rotationEffect(.degrees(index == currentStepIndex ? 90 : 0))
                         .animation(.spring(response: 0.3, dampingFraction: 0.6), value: currentStepIndex)
-                        .onTapGesture {
-                            if currentStepIndex == index {
-                                withAnimation { currentStepIndex = -1 }
-                            }
-                            else {
-                                withAnimation{ currentStepIndex = index }
-                            }
-                        }
+                }
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    if currentStepIndex == index {
+                        withAnimation { currentStepIndex = -1 }
+                    }
+                    else {
+                        impact.impactOccurred()
+                        withAnimation{ currentStepIndex = index }
+                    }
                 }
                 
                 

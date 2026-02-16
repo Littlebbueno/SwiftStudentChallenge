@@ -10,9 +10,9 @@ import AVFAudio
 struct CPRAnimationView: View {
     @State private var isExpanding = false
     @State private var counter = 0
-    let bpmInterval = 60.0 / 110.0
+    let bpmInterval = 0.5454545
     
-    let timer = Timer.publish(every: 60.0 / 110.0, on: .main, in: .common).autoconnect()
+    let timer = Timer.publish(every: 0.5454545, on: .main, in: .common).autoconnect()
 //    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
     @State private var audioPlayer: AVAudioPlayer!
@@ -46,7 +46,7 @@ struct CPRAnimationView: View {
         }
         .onAppear {
             Task {
-                try? await Task.sleep(nanoseconds: 200_000_000)
+                try? await Task.sleep(nanoseconds: 100_000_000)
                 setupAudio()
                 audioPlayer.numberOfLoops = -1
                 audioPlayer.play()

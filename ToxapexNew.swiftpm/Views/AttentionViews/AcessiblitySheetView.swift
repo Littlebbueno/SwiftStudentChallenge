@@ -18,6 +18,8 @@ struct AcessiblitySheetView: View {
     
     @State var eyeChoice: Bool = false
     @State var acessibilityChoice: Bool = false
+    let impact = UIImpactFeedbackGenerator(style: .light)
+
     
     init() {
         self._acessibilityChoice = State(initialValue: acessibilityActivated)
@@ -25,61 +27,140 @@ struct AcessiblitySheetView: View {
     }
     
     var body: some View {
-        VStack(alignment: .center, spacing: 25) {
-            Text("Accessibility Settings")
-                .font(.headline)
-            
-            Text("Hello, here you can configure your attention assistant to your need.")
-                .multilineTextAlignment(.center)
-                .font(.subheadline)
-            
-            Toggle("Accessibility Mode", isOn: $acessibilityChoice.animation(.spring()))
-                .tint(Color("AccentColor"))
-            
-            if acessibilityChoice {
-                VStack(spacing: 15) {
-                    Text("What eye do you need to the assistant to check while driving?")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+        NavigationStack {
+            ZStack {
+                Color(.systemGroupedBackground)
+                    .ignoresSafeArea()
+                VStack(alignment: .center, spacing: 25) {
+                    VStack(alignment: .leading, spacing: 6) {
+                        ZStack {
+                            RoundedRectangle(cornerRadius: 15)
+                                .frame(width: 65, height: 65)
+                                .foregroundStyle(Color("AccessibilityColor").gradient)
+                            Image(systemName: "accessibility")
+                                .resizable()
+                                .frame(width: 45, height: 45)
+                                .foregroundStyle(.white)
+                        }
+                        
+                        Text("Accessibility")
+                            .font(.title2)
+                            .fontWeight(.bold)
+                            .padding(.top, 4)
+                        
+                        Text("This mode lets you choose a 'master eye' to guide tracking. The assistant will focus exclusively on your selected eye to monitor drowsiness, ensuring accurate alerts even if your eyes do not move in sync.")
+                            .font(.subheadline)
+                            .foregroundStyle(Color.secondary)
+                    }
+                    .padding(18)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background {
+                        RoundedRectangle(cornerRadius: 30)
+                            .foregroundStyle(Color(.secondarySystemGroupedBackground))
+                    }
+                    Toggle(isOn: $acessibilityChoice.animation(.spring())
+                    ){
+                        Text("Turn on Accessibility Mode")
+                            .font(.headline)
+                            .fontWeight(.medium)
+                            .padding(.vertical)
+                    }
+                    .tint(Color.green)
+                    .padding(.horizontal)
+                    .background{
+                        RoundedRectangle(cornerRadius: 20)
+                            .foregroundColor(Color(.secondarySystemGroupedBackground))
+                    }
+
                     
-                    HStack(spacing: 20) {
-                        eyeButton(title: "Left Eye", isRight: false)
-                        eyeButton(title: "Right Eye", isRight: true)
+                    if acessibilityChoice {
+                        VStack(spacing: 30) {
+                            Text("What eye do you need to the assistant to check while driving?")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                            
+                            HStack(spacing: 100) {
+                                eyeButton(title: "Left Eye", isRight: false)
+                                eyeButton(title: "Right Eye", isRight: true)
+                            }
+                        }
+                        .transition(.opacity.combined(with: .scale))
+                    }
+                    
+                    Spacer()
+                    
+                    Button {
+                        self.acessibilityActivated = self.acessibilityChoice
+                        self.acessibilityEye = self.eyeChoice
+                        dismiss()
+                    } label: {
+                        Text("Done")
+                            .padding(.vertical, 8)
+                            .fontWeight(.bold)
+                            .foregroundStyle(.white)
+                            .containerRelativeFrame(.horizontal) { length, axis in
+                                0.5 * length
+                            }
+                        
+                    }
+                    .tint(Color("AccentColor2"))
+                    .buttonStyle(.glassProminent)
+                    
+                }
+                .padding()
+            }
+            .navigationTitle("Accessibility Settings")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        dismiss()
+                    }label:{
+                        Image(systemName: "xmark")
                     }
                 }
-                .transition(.opacity.combined(with: .scale))
             }
-            
-            Spacer()
-            
-            Button {
-                self.acessibilityActivated = self.acessibilityChoice
-                self.acessibilityEye = self.eyeChoice
-                dismiss()
-            } label: {
-                Text("Done")
-                    .padding(.vertical, 8)
-                    .fontWeight(.bold)
-                    .foregroundStyle(.white)
-                    .containerRelativeFrame(.horizontal) { length, axis in
-                        0.5 * length
-                    }
-                    
-            }
-            .tint(Color("AccentColor2"))
-            .buttonStyle(.glassProminent)
         }
-        .padding(30)
     }
     
     private func eyeButton(title: String, isRight: Bool) -> some View {
-        Button {
-            eyeChoice = isRight
+        let isSelected = (eyeChoice == isRight)
+        
+        return Button {
+            impact.impactOccurred()
+            withAnimation {
+                eyeChoice = isRight
+            }
         } label: {
-            Text(title)
-                .frame(maxWidth: .infinity)
+            VStack(spacing: 12) {
+                ZStack {
+                    Circle()
+                        .fill(isSelected ? Color.pink : Color(.secondarySystemGroupedBackground))
+                        .frame(width: 60, height: 60)
+                    Image(systemName: "eye.fill")
+                        .font(.system(size: 20, weight: .medium))
+                        .foregroundStyle(isSelected ? .white : .secondary)
+                    
+                    if isSelected {
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundStyle(colorScheme == .dark ? .black: .white, colorScheme == .dark ? .white : .black)
+                            .background(Circle().fill(.white))
+                            .offset(x: 25, y: -20)
+                            .transition(.scale.combined(with: .opacity))
+                    }
+                }
+                Text(title)
+                    .font(.subheadline)
+                    .fontWeight(isSelected ? .bold : .medium)
+                    .foregroundStyle(isSelected ? .primary : .secondary)
+            }
+            .scaleEffect(isSelected ? 1.05 : 1.0)
         }
-        .tint(eyeChoice == isRight ? .blue : .gray.opacity(0.3))
-        .buttonStyle(.borderedProminent)
+        .buttonStyle(.plain)
     }
+}
+
+#Preview {
+    AcessiblitySheetView()
+        .preferredColorScheme(ColorScheme.dark)
 }

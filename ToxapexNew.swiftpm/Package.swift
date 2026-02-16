@@ -33,7 +33,8 @@ let package = Package(
                 .portraitUpsideDown(.when(deviceFamilies: [.pad]))
             ],
             capabilities: [
-                .camera(purposeString: "The App needs access to the camera for the Attention Assistant to function.")
+                .camera(purposeString: "This App needs access to the camera for the Attention Assistant to function."),
+                .contacts(purposeString: "This app requires access to your contacts to let you select and add emergency contacts quickly.")
             ],
             appCategory: .travel
         )

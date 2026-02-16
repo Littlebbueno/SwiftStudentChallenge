@@ -17,8 +17,11 @@ struct AssistantOnboardingView: View {
             VStack {
                 TabView(selection: self.$tabIndex) {
                     FirstOnboardingAssistantView()
+                        .ignoresSafeArea(edges: .all)
                         .tag(0)
                     AcessibilityOnboardingAssistantView()
+//                        .ignoresSafeArea(edges: .all)
+
                         .tag(1)
                     DayModesOnboardingAssistantView()
                         .tag(2)
@@ -67,7 +70,7 @@ struct AssistantOnboardingView: View {
 }
 
 #Preview {
-    AssistantOnboardingView()
+    DayModesOnboardingAssistantView()
         .preferredColorScheme(.dark)
 }
 
@@ -89,7 +92,7 @@ struct FirstOnboardingAssistantView: View {
                     .resizable()
                     .scaledToFill()
                     .containerRelativeFrame(.vertical) { length, axis in
-                        length * 0.40
+                        length * 0.45
                     }
                     .clipped()
                     .padding(.bottom)
@@ -104,7 +107,7 @@ struct FirstOnboardingAssistantView: View {
                         .font(.headline)
                         .fontWeight(.semibold)
                         .padding(.top, 8)
-                    Text("Before you drive, mount your phone at eye level about 10 to 20 inches (25–50 cm) from your face, ensuring a good view of your eyes and high volume. Test the tracking by blinking to confirm the indicators respond, and verify the illumination.")
+                    Text("Before you drive, mount your phone with a clear view of your face, at a distance of 12 to 28 inches (30–70 cm), ensuring a good view of your eyes and high volume. Test the tracking by blinking to confirm the indicators respond, and verify the illumination.")
                         .font(.subheadline)
                     Text("Always complete this setup while safely parked.")
                         .font(.subheadline)
@@ -149,7 +152,7 @@ struct AcessibilityOnboardingAssistantView: View {
                 Text("Accessibility Mode")
                     .font(.title)
                     .fontWeight(.bold)
-                Text("Mode that is designed for users with ocular prosthetics, a lazy eye (strabismus), or any condition where one eye does not move or close in sync with the other.")
+                Text("Mode that is designed for users with ocular prosthetics, strabismus, or any condition where one eye does not move or close in sync with the other.")
                     .font(.subheadline)
                     .multilineTextAlignment(.center)
                     .opacity(0.6)
@@ -161,20 +164,59 @@ struct AcessibilityOnboardingAssistantView: View {
     }
 }
 struct DayModesOnboardingAssistantView: View {
-    
+    @Environment(\.colorScheme) var colorScheme
+
     var body: some View {
-        VStack(spacing: 14) {
-            HStack {
-                Image(systemName: "sun.max")
-                    .font(.largeTitle)
-                    .foregroundStyle(.orange)
-                Image(systemName: "moon.fill")
-                    .font(.largeTitle)
-                    .foregroundStyle(.indigo)
+        ZStack {
+            LinearGradient(
+                stops: [
+                    .init(color: Color.orange.opacity(colorScheme == .dark ? 0.4: 0.3), location: 0),
+                    .init(color: Color.indigo.opacity(colorScheme == .dark ? 0.3 : 0.2), location: 0.55),
+                    .init(color: .clear, location: 1)
+                ],
+                startPoint: .top,
+                endPoint: .bottom
+            )
+            .ignoresSafeArea()
+            VStack(spacing: 30) {
+                Spacer()
+                HStack {
+                    ZStack {
+                        Circle()
+                            .frame(width: 100)
+                            .foregroundStyle(Color.white)
+                        Image(systemName: "sun.max.fill")
+                            .resizable()
+                            .frame(width: 80, height: 80)
+                            .foregroundStyle(Color.orange)
+                    }
+                    ZStack {
+                        Circle()
+                            .frame(width: 100)
+                            .foregroundStyle(Color.white)
+                        Image(systemName: "moon.fill")
+                            .resizable()
+                            .frame(width: 80, height: 80)
+                            .foregroundStyle(Color.indigo)
+                    }
+                }
+                Text("Day and Night Mode")
+                    .font(.title)
+                    .fontWeight(.bold)
+                VStack(spacing: 10) {
+                    Text("Day Mode: Optimized for daylight. It uses high-efficiency computer vision to preserve battery life.")
+                        .font(.subheadline)
+                        .multilineTextAlignment(.center)
+                        .opacity(0.6)
+                    Text("Night Mode: Powered by infrared sensors, this mode outperforms Day Mode in low-light, but it still requires some ambient light to track facial geometry.")
+                        .font(.subheadline)
+                        .multilineTextAlignment(.center)
+                        .opacity(0.6)
+                }
+                Spacer()
+                Spacer()
             }
-            Text("Day and Night Mode.")
-                .font(.title)
-                .fontWeight(.bold)
+            .padding()
         }
     }
 }
