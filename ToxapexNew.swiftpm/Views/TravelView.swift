@@ -44,6 +44,7 @@ struct TravelView: View {
     
     @State private var animateGradient = false
     let impact = UIImpactFeedbackGenerator(style: .light)
+    @State var path: [navigationPath] = []
 
     var body: some View {
         ZStack {
@@ -97,16 +98,16 @@ struct TravelView: View {
                     .padding(.horizontal, 22)
                     .padding(.top, 8)
                     emergencies(items: filteredVehicle)
-                    HStack {
-                        Text("Road & Weather Emergencies")
-                            .font(.subheadline)
-                            .fontWeight(.semibold)
-                            .foregroundStyle(Color.secondary)
-                        Spacer()
-                    }
-                    .padding(.horizontal, 22)
-                    .padding(.top, 8)
-                    emergencies(items: filteredRoadWeather)
+//                    HStack {
+//                        Text("Road & Weather Emergencies")
+//                            .font(.subheadline)
+//                            .fontWeight(.semibold)
+//                            .foregroundStyle(Color.secondary)
+//                        Spacer()
+//                    }
+//                    .padding(.horizontal, 22)
+//                    .padding(.top, 8)
+//                    emergencies(items: filteredRoadWeather)
                     
                 }
             }
@@ -128,8 +129,22 @@ struct TravelView: View {
             }
         }
         .fullScreenCover(item: $selectedEmergency) { emergencyItem in
-            NavigationStack {
-                EmergencyView(emergency: emergencyItem)
+            NavigationStack(path: $path) {
+                EmergencyView(emergency: emergencyItem, path: $path)
+                    .navigationDestination(for: navigationPath.self) { destino in
+                        switch destino {
+                        case .medical:
+                            EmergencyView(emergency: self.immediateEmergencies[0], path: $path)
+                        case .cpr:
+                            EmergencyView(emergency: self.immediateEmergencies[1], path: $path)
+                        case .fire:
+                            EmergencyView(emergency: self.immediateEmergencies[2], path: $path)
+                        case .animalHit:
+                            EmergencyView(emergency: self.immediateEmergencies[3], path: $path)
+                        case .disabledVehicle:
+                            EmergencyView(emergency: self.immediateEmergencies[4], path: $path)
+                        }
+                    }
             }
         }
 

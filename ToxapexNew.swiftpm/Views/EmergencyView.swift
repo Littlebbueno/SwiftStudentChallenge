@@ -13,6 +13,7 @@ struct EmergencyView: View {
     @Environment(\.dismiss) private var dismiss
     let impact = UIImpactFeedbackGenerator(style: .light)
     @Environment(\.colorScheme) var colorScheme
+    @Binding var path : [navigationPath]
 
     var body: some View {
         ScrollViewReader { proxy in
@@ -140,9 +141,10 @@ struct EmergencyView: View {
                             ZStack {
                                 RoundedRectangle(cornerRadius: 12)
                                     .fill(.ultraThinMaterial)
+                                    .environment(\.colorScheme, .dark)
                                 RoundedRectangle(cornerRadius: 12)
-                                    .fill(.white)
-                                    .opacity(0.86)
+                                    .fill(.black)
+                                    .opacity(0.6)
                             }
                         }
                         .padding(.vertical, 6)
@@ -152,14 +154,9 @@ struct EmergencyView: View {
                     if !step.insideSteps.isEmpty {
                         VStack(alignment: .leading, spacing: 8) {
                             ForEach(step.insideSteps) { insideStep in
-                                if insideStep.stepDescription == "Move the lower jaw forward without tilting the head back to protect the neck." {
-                                    Text("Methods to clear the Airways:")
-                                        .fontWeight(.medium)
-                                        .font(.subheadline)
-                                        .foregroundStyle(colorText)
-                                        .offset(x: -12)
-                                        .padding(.top, 4)
-                        
+                                if let linkTo = insideStep.linkTo {
+                                    cardToOtherView(linkTo: linkTo)
+                                        .padding(.bottom, 8)
                                 }
                                 HStack(alignment: .top, spacing: 10) {
                                     Circle()
@@ -196,6 +193,7 @@ struct EmergencyView: View {
                                             .cornerRadius(10)
                                             .shadow(color: .black.opacity(0.15), radius: 10, y: 5)
                                         }
+                                        .padding(.vertical, 4)
                                     }else {
                                         Button{
                                             callNumber(phoneNumber: insideStep.callStep)
@@ -208,16 +206,35 @@ struct EmergencyView: View {
                                             }
                                             .frame(maxWidth: .infinity)
                                             .frame(height: 45)
-                                            .background((emergency.color == Color("SevereAccident") || emergency.color == Color("VehicleFire"))  ? Color("AlertColor3") : Color("AlertColor2"))
+                                            .background((emergency.color == Color("DisabledVehicle") || emergency.color == Color("VehicleFire") || emergency.color == Color("Overheating"))  ? Color("AlertColor3") : Color("AlertColor2"))
                                             .foregroundStyle(.white)
                                             .cornerRadius(10)
                                             .shadow(color: .black.opacity(0.15), radius: 10, y: 5)
                                         }
+                                        .padding(.vertical, 4)
                                     }
+                                }
+                                if insideStep.image != "" {
+                                    Image(insideStep.image)
+                                        .resizable()
+                                        .scaledToFill()
+                                        .containerRelativeFrame(.vertical) { length, axis in
+                                            length * 0.30
+                                        }
+                                        .clipped()
+                                        .cornerRadius(15)
+                                        .padding(.vertical, 8)
+                                        .padding(.horizontal, 8)
                                 }
                             }
                         }
-                        .padding(.leading, 12)
+                        .padding(.leading, 4)
+                    }
+                    if step.specificAnimation == true {
+                        if emergency.color == Color("CPREmergency"){
+                            CPRAnimationView()
+                                .padding(40)
+                        }
                     }
                     if step.warning != "" && step.warningBefore == false{
                         HStack(alignment: .center ,spacing: 20) {
@@ -234,9 +251,11 @@ struct EmergencyView: View {
                             ZStack {
                                 RoundedRectangle(cornerRadius: 12)
                                     .fill(.ultraThinMaterial)
+                                    .environment(\.colorScheme, .dark)
+
                                 RoundedRectangle(cornerRadius: 12)
-                                    .fill(.white)
-                                    .opacity(0.86)
+                                    .fill(.black)
+                                    .opacity(0.6)
                             }
                         }
                         .padding(.vertical, 6)
@@ -255,11 +274,9 @@ struct EmergencyView: View {
                             .padding(.vertical, 8)
                             .padding(.horizontal, 8)
                     }
-                    if step.specificAnimation == true {
-                        if emergency.color == Color("Medical") || emergency.color == Color("CPREmergency"){
-                            CPRAnimationView()
-                                .padding(40)
-                        }
+                    if let linkTo = step.linkTo{
+                        cardToOtherView(linkTo: linkTo)
+                            .padding(.top, 10)
                     }
                 }
                 
@@ -286,6 +303,41 @@ struct EmergencyView: View {
                 if currentStepIndex != index {
                     withAnimation{ currentStepIndex = index }
                 }
+            }
+        }
+    }
+    
+    func cardToOtherView(linkTo: navigationPath) -> some View{
+        Button{
+            self.path.append(linkTo)
+        }label: {
+            if linkTo == navigationPath.cpr {
+                HStack {
+                    Text("CPR Resuscitation")
+                        .padding()
+                        .font(.headline)
+                        .fontWeight(.bold)
+                }
+                .frame(maxWidth: .infinity)
+                .frame(height: 45)
+                .background(Color("CPREmergency3"))
+                .foregroundStyle(.black)
+                .cornerRadius(10)
+                .shadow(color: .black.opacity(0.15), radius: 10, y: 5)
+            }
+            if linkTo == navigationPath.fire {
+                HStack {
+                    Text("Vehicle Fire")
+                        .padding()
+                        .font(.headline)
+                        .fontWeight(.bold)
+                }
+                .frame(maxWidth: .infinity)
+                .frame(height: 45)
+                .background(Color("VehicleFire3"))
+                .foregroundStyle(.black)
+                .cornerRadius(10)
+                .shadow(color: .black.opacity(0.15), radius: 10, y: 5)
             }
         }
     }

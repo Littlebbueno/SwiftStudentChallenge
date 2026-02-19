@@ -1,5 +1,13 @@
 import SwiftUI
 
+enum navigationPath: Hashable {
+    case medical
+    case cpr
+    case fire
+    case animalHit
+    case disabledVehicle
+}
+
 @main
 struct MyApp: App {
     @State var emergencyManager = EmergencyManager()

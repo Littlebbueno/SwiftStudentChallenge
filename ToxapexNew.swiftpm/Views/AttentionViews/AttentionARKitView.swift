@@ -17,7 +17,8 @@ struct AttentionARKitView: View {
     @State private var isDrowsy: Bool = false
     
     //
-    let synthesizer = AVSpeechSynthesizer()
+    @State var audioPlayer: AudioPlayerAttention
+
     
     @State private var assistActive: Bool = false
     @Environment(\.colorScheme) var colorScheme
@@ -100,10 +101,16 @@ struct AttentionARKitView: View {
 
             if closedFramesCounter >= 35 && !isDrowsy {
                 isDrowsy = true
-                wakeUpSound()
+                audioPlayer.wakeUpSound()
             } else if closedFramesCounter == 0 && isDrowsy {
                 isDrowsy = false
-                synthesizer.stopSpeaking(at: .immediate)
+                audioPlayer.speakToPause()
+            }
+            if closedFramesCounter <= 15 && isDrowsy {
+                guard let player = audioPlayer.player else { return }
+                if player.isPlaying {
+                    audioPlayer.player?.stop()
+                }
             }
         }
         .alert("Camera Access Required", isPresented: $showAlertCamera) {
@@ -170,7 +177,8 @@ struct AttentionARKitView: View {
 
             }
             self.isDrowsy = false
-            self.synthesizer.stopSpeaking(at: .immediate)
+//            self.synthesizer.stopSpeaking(at: .immediate)
+            audioPlayer.player?.stop()
             Task {
                 try? await Task.sleep(nanoseconds: 200_000_000)
                 self.eyeTracker.eyeStatus = .nofaceDetected
@@ -182,24 +190,10 @@ struct AttentionARKitView: View {
                     .font(.headline)
             }
             .dynamicTypeSize(...DynamicTypeSize.xLarge)
-            .foregroundColor(Color("SevereAccident"))
+            .foregroundColor(Color("AlertColor"))
             .frame(maxWidth: .infinity)
 
         }
-    }
-    
-    func wakeUpSound() {
-        AudioServicesPlaySystemSound(1005)
-        let mensagem = "Are you awake?"
-        let utterance = AVSpeechUtterance(string: mensagem)
-        utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
-        utterance.rate = 0.5 // Velocidade da fala
-        utterance.volume = 1.0
-
-        synthesizer.speak(utterance)
-        
-        try? AVAudioSession.sharedInstance().setActive(true)
-        print("Pergunta emitida: \(Date())")
     }
     
     func checkCameraPermission() -> Bool{

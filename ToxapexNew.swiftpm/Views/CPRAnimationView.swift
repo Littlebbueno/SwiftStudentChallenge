@@ -10,9 +10,9 @@ import AVFAudio
 struct CPRAnimationView: View {
     @State private var isExpanding = false
     @State private var counter = 0
-    let bpmInterval = 0.5454545
+    let bpmInterval = 0.545
     
-    let timer = Timer.publish(every: 0.5454545, on: .main, in: .common).autoconnect()
+    let timer = Timer.publish(every: 0.545, on: .main, in: .common).autoconnect()
 //    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
     
     @State private var audioPlayer: AVAudioPlayer!
@@ -41,7 +41,7 @@ struct CPRAnimationView: View {
                             .repeatForever(autoreverses: false),
                         value: isExpanding
                     )
-                    .sensoryFeedback(.impact, trigger: counter)
+                    .sensoryFeedback(.impact(weight: .heavy, intensity: 1000), trigger: counter)
             }
         }
         .onAppear {
@@ -76,9 +76,7 @@ struct CPRAnimationView: View {
 
     func playPulse() {
         counter += 1
-        withAnimation(.easeInOut(duration: 0.01)) {
-            isExpanding = true
-        }
+        isExpanding = true
     }
 }
 

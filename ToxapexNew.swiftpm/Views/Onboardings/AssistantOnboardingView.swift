@@ -152,7 +152,7 @@ struct AcessibilityOnboardingAssistantView: View {
                 Text("Accessibility Mode")
                     .font(.title)
                     .fontWeight(.bold)
-                Text("Mode that is designed for users with ocular prosthetics, strabismus, or any condition where one eye does not move or close in sync with the other.")
+                Text("Mode that is designed for users with ocular prosthetics, amblyopia, or any condition where one eye does not move or close in sync with the other.")
                     .font(.subheadline)
                     .multilineTextAlignment(.center)
                     .opacity(0.6)

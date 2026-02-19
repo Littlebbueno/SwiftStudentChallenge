@@ -28,6 +28,8 @@ struct AttentionView: View {
     @AppStorage("acessibilityEye") var acessibilityEye: Bool = false
     
     @Environment(\.scenePhase) var scenePhase
+    
+    @State var audioPlayer = AudioPlayerAttention()
 
     var eyeTrackerToCheck: eyeStatus {
         attentionMode ? eyeTracker.eyeStatus : eyeTrackerVision.eyeStatus
@@ -64,9 +66,9 @@ struct AttentionView: View {
             .padding(.horizontal)
             
             if attentionMode {
-                AttentionARKitView(eyeTracker: self.eyeTracker, playing: self.$playing)
+                AttentionARKitView(eyeTracker: self.eyeTracker, playing: self.$playing, audioPlayer: audioPlayer)
             }else{
-                AttentionVisionView(eyeTracker: self.eyeTrackerVision, playing: self.$playing)
+                AttentionVisionView(eyeTracker: self.eyeTrackerVision, playing: self.$playing, audioPlayer: audioPlayer)
             }
             VStack {
                 Spacer()
