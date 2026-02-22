@@ -136,7 +136,6 @@ struct AttentionVisionView: View {
                 cameraManager.captureSession.stopRunning()
             }
         }
-        // Sempre que o frame da câmera mudar, o Vision processa
         .onChange(of: cameraManager.currentFrame) { _ , newFrame in
             if let frame = newFrame {
                 eyeTracker.detectEyes(on: frame)

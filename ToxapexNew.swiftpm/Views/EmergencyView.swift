@@ -9,7 +9,7 @@ import SwiftUI
 
 struct EmergencyView: View {
     var emergency: Emergency
-    @State private var currentStepIndex = 0
+    @State private var currentStepIndex = -1
     @Environment(\.dismiss) private var dismiss
     let impact = UIImpactFeedbackGenerator(style: .light)
     @Environment(\.colorScheme) var colorScheme
@@ -35,9 +35,33 @@ struct EmergencyView: View {
                         }
                     }
                     .padding()
+                    HStack {
+                        VStack(alignment: .leading, spacing: 4) {
+                            if !emergency.links.isEmpty {
+                                Text("Main references:")
+                                    .font(.caption)
+                                    .fontWeight(.semibold)
+                                    .foregroundStyle(Color.secondary)
+
+                            }
+                            ForEach(emergency.links, id: \.self.title) { link in
+                                if let url = URL(string: link.url){
+                                    Link(link.title, destination: url)
+                                        .underline()
+                                        .font(.caption2)
+                                        .multilineTextAlignment(.leading)
+                                        .foregroundStyle(Color.secondary)
+                                    //                                Text(link)
+                                }
+                            }
+                        }
+                        Spacer()
+                    }
+                    .padding(.horizontal, 24)
                     
                 }
             }
+            .dynamicTypeSize(...DynamicTypeSize.accessibility2)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
@@ -65,22 +89,25 @@ struct EmergencyView: View {
             .navigationTitle(emergency.title)
             .navigationBarTitleDisplayMode(.inline)
             .safeAreaInset(edge: .bottom) {
-                Button{
-                    impact.impactOccurred()
-                    if currentStepIndex < emergency.steps.count - 1 {
-                        withAnimation {
-                            currentStepIndex += 1
+                if self.currentStepIndex < emergency.steps.count - 1 {
+                    Button{
+                        impact.impactOccurred()
+                        if currentStepIndex < emergency.steps.count - 1 {
+                            withAnimation {
+                                currentStepIndex += 1
+                            }
                         }
+                    }label:{
+                        Text(currentStepIndex < 0 ? "Start Guide" : "Next Step")
+                            .font(.headline)
+                            .padding(.vertical, 10)
+                            .padding(.horizontal,18)
                     }
-                }label:{
-                    Text("Next Step")
-                        .font(.headline)
-                        .padding(.vertical, 10)
-                        .padding(.horizontal,18)
+                    .tint(Color("AlertColor2"))
+                    .buttonStyle(.glassProminent)
+                    .padding()
+                    .dynamicTypeSize(...DynamicTypeSize.accessibility2)
                 }
-                .tint(Color("AlertColor2"))
-                .buttonStyle(.glassProminent)
-                .padding()
             }
             .onChange(of: self.currentStepIndex) { _, newValue in
                 withAnimation(.easeInOut) {
@@ -95,7 +122,7 @@ struct EmergencyView: View {
             
             VStack(alignment: .leading, spacing: 8) {
                 HStack {
-                    Text(step.title)
+                    Text("Step \(index + 1): \(step.title)")
                         .font(.headline)
                         .fontWeight(.semibold)
                         .foregroundStyle(index == currentStepIndex ? colorText: .primary)
@@ -233,7 +260,7 @@ struct EmergencyView: View {
                     if step.specificAnimation == true {
                         if emergency.color == Color("CPREmergency"){
                             CPRAnimationView()
-                                .padding(40)
+                                .padding(.vertical, 48)
                         }
                     }
                     if step.warning != "" && step.warningBefore == false{

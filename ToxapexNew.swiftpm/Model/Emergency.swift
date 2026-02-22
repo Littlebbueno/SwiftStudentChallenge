@@ -7,6 +7,17 @@
 
 import SwiftUI
 
+class URLLink: Identifiable {
+    let id = UUID()
+    var title: String
+    var url: String
+    
+    init(title: String, url: String){
+        self.title = title
+        self.url = url
+    }
+}
+
 class Emergency: Identifiable {
     let id = UUID()
     var title: String
@@ -15,15 +26,17 @@ class Emergency: Identifiable {
     var category: Int
     var color: Color
     var color2: Color
+    var links: [URLLink]
     
 
-    init(title: String, image: String, steps: [EmergencyStep], category: Int, color: Color, color2: Color) {
+    init(title: String, image: String, steps: [EmergencyStep], category: Int, color: Color, color2: Color, links: [URLLink]) {
         self.title = title
         self.image = image
         self.steps = steps
         self.category = category
         self.color = color
         self.color2 = color2
+        self.links = links
     }
 }
 
@@ -114,7 +127,7 @@ class EmergencyManager {
                 EmergencyStep(title: "192 (SAMU):", text: "Best for medical emergencies and victim stabilization.", callNumber: "192")
             ], linkTo: nil),
             EmergencyStep(title: "Safety First", image: "", stepDescription: "Before taking any action, ensure the area is safe for you. Do not put yourself at risk. If the scene is unstable, wait for professional emergency services.", specificAnimation: false, insideSteps: [], linkTo: nil),
-            EmergencyStep(title: "Cardiac Arrest & Positioning for CPR", image: "imageCPR", stepDescription: "Only if the victim is unresponsive and NOT breathing.", specificAnimation: false, insideSteps: [EmergencyStep(title: "Positioning:", text: "Place the victim on their back on a firm surface.", callNumber: nil), EmergencyStep(title: "Your Position:", text: "Kneel beside the victim’s chest.", callNumber: nil), EmergencyStep(title: "Hand Placement:", text: "Place the heel of one hand on the center of the chest. Interlock the other hand on top.", callNumber: nil),EmergencyStep(title: nil, text: "Position your shoulders directly above your hands and lock your elbows.", callNumber: nil), EmergencyStep(title: "Compression:", text: "Press straight down (2 inches/5cm) using body weight. Let the chest recoil fully between compressions.", callNumber: nil), EmergencyStep(title: nil, text: "Go to next step to keep the rhythm of 100-120 compression per minute.", callNumber: nil)], linkTo: nil),
+            EmergencyStep(title: "Positioning for CPR", image: "imageCPR", stepDescription: "Only if the victim is unresponsive and NOT breathing.", specificAnimation: false, insideSteps: [EmergencyStep(title: "Positioning:", text: "Place the victim on their back on a firm surface.", callNumber: nil), EmergencyStep(title: "Your Position:", text: "Kneel beside the victim’s chest.", callNumber: nil), EmergencyStep(title: "Hand Placement:", text: "Place the heel of one hand on the center of the chest. Interlock the other hand on top.", callNumber: nil),EmergencyStep(title: nil, text: "Position your shoulders directly above your hands and lock your elbows.", callNumber: nil), EmergencyStep(title: "Compression:", text: "Press straight down (2 inches/5cm) using body weight. Let the chest recoil fully between compressions.", callNumber: nil), EmergencyStep(title: nil, text: "Go to next step to keep the rhythm of 100-120 compression per minute.", callNumber: nil)], linkTo: nil),
             EmergencyStep(title: "Perform Hands-Only CPR", image: "", stepDescription: "Keep up with the rhythm of the animation.", specificAnimation: true, insideSteps: [EmergencyStep(title: nil, text: "If possible, rotate rescuers every 2 minutes to maintain the quality of CPR.", callNumber: nil)], warning: "Do not stop until help arrives or the person starts breathing again.", warningBefore: false, linkTo: nil)
         ]
         let medicalSteps = [
@@ -125,7 +138,7 @@ class EmergencyManager {
                 specificAnimation: false,
                 insideSteps: [
                     EmergencyStep(title: nil, text: "Pull over to a safe spot and turn on hazard lights.", callNumber: nil),
-                    EmergencyStep(title: nil, text: "Place the warning triangle at a distance equal to the speed limit (min. 30m). If unavailable, use tree branches or a flashlight from a safe distance off-road.", callNumber: nil)
+                    EmergencyStep(title: nil, text: "Set the warning triangle to alert traffic and avoid secondary collisions.", callNumber: nil)
                 ],
                 linkTo: nil
             ),
@@ -133,7 +146,7 @@ class EmergencyManager {
             EmergencyStep(
                 title: "Call for Help",
                 image: "",
-                stepDescription: "",
+                stepDescription: "Call the highway's 0800 number for faster assistance. If unknown, use the emergency services below:",
                 specificAnimation: false,
                 insideSteps: [
                     EmergencyStep(title: "192 (SAMU):", text: "Best for medical emergencies and victim stabilization.", callNumber: "192"),
@@ -180,8 +193,7 @@ class EmergencyManager {
                         callNumber: nil
                     ),
                     EmergencyStep(title: nil, text: "Do not release pressure until the bleeding is controlled.", callNumber: nil),
-                    EmergencyStep(title: nil, text: "If the compress becomes soaked with blood, place another compress on top without removing the first one.", callNumber: nil),
-                    EmergencyStep(title: nil, text: "Once controlled, bandage the wound firmly using clean and soft material.", callNumber: nil)
+                    EmergencyStep(title: nil, text: "If the compress becomes soaked with blood, place another compress on top without removing the first one.", callNumber: nil)
                 ],
                 warning: "If there are embedded objects in the wound, DO NOT remove them.",
                 warningBefore: true,
@@ -205,14 +217,27 @@ class EmergencyManager {
             EmergencyStep(
                 title: "Methods to clear the Airways",
                 image: "",
-                stepDescription: "Attempt to clear the victim's airways using the following techniques:",
+                stepDescription: "",
                 specificAnimation: false,
                 insideSteps: [
-                    EmergencyStep(title: "Jaw Thrust (Preferred for Trauma):", text: "Place your hands on either side of their head and use your fingertips to gently lift the angle of the jaw forward and upwards, without moving the head, to open the airway.", callNumber: nil, image: "imageCPR"),
-                    EmergencyStep(title: "Chin Lift:", text: "Place one hand on the forehead and gently tilt the head back, lifting the chin with 2 fingers.", callNumber: nil, image: "imageCPR")
+                    EmergencyStep(title: "Jaw Thrust (Preferred for Trauma):", text: "Hold their face with thumbs on cheekbones and fingers under the bottom of the jaw.", callNumber: nil, image: ""),
+                    EmergencyStep(title: "", text: "Use your fingertips to gently lift up on the jaw while your thumbs press down, without moving the head.", callNumber: nil, image: "imageJawThrust"),
+                    EmergencyStep(title: "", text: "If the airway is still blocked, proceed to: Chin Lift.", callNumber: nil)
                 ],
                 warning: "If the victim is wearing a helmet, do not remove it and wait for emergency services.",
                 warningBefore: true,
+                linkTo: nil
+            ),
+            EmergencyStep(
+                title: "Chin Lift",
+                image: "",
+                stepDescription: "",
+                specificAnimation: false,
+                insideSteps: [
+                    EmergencyStep(title: "", text: "Place one hand on the forehead and gently tilt the head back, lifting the chin with 2 fingers.", callNumber: nil, image: "imageChinLift")
+                ],
+                warning: "",
+                warningBefore: false,
                 linkTo: nil
             ),
             
@@ -222,8 +247,8 @@ class EmergencyManager {
                 stepDescription: "Assess if the breathing is effective and the patient is well-oxygenated.",
                 specificAnimation: false,
                 insideSteps: [
-                    EmergencyStep(title: "Watch the Chest:", text: "Does it rise and fall? Check if both sides move equally.", callNumber: nil),
-                    EmergencyStep(title: "Listen:", text: "Put your ear near their mouth. Do you hear normal breathing or struggling sounds?", callNumber: nil),
+                    EmergencyStep(title: "", text: "Look to see if their chest is rising and falling.", callNumber: nil),
+                    EmergencyStep(title: "", text: "Listen over their mouth and nose for breathing sounds.", callNumber: nil),
                     EmergencyStep(title: "Skin Color:", text: "Check if the lips or fingers are turning blue (sign of low oxygen).", callNumber: nil),
                     EmergencyStep(title: "Monitor continuously:", text: "If breathing stops, call 192 and start CPR at the \"CPR Resuscitation\" emergency.", callNumber: nil)
                 ],
@@ -236,7 +261,7 @@ class EmergencyManager {
                 stepDescription: "Assess the victim’s blood flow and control any remaining bleeding to prevent shock.",
                 specificAnimation: false,
                 insideSteps: [
-                    EmergencyStep(title: "Check Circulation:", text: "Feel for a pulse and check skin temperature; use the capillary refill test (color should return within 2 seconds).", callNumber: nil),
+                    EmergencyStep(title: "Check Circulation:", text: "Check for a pulse. Then, press down on a fingernail until the bed turns white and release; color should return within 2 seconds.", callNumber: nil, image: "imageCPR"),
                     EmergencyStep(title: "Stop Bleeding:", text: "Identify and control any external bleeding.", callNumber: nil),
                     EmergencyStep(title: "Maintain Heat:", text: "Keep the victim warm with blankets or clothing to help prevent hypothermia and shock.", callNumber: nil)
                 ],
@@ -303,7 +328,7 @@ class EmergencyManager {
                 stepDescription: "Signal only if safe. Protect yourself and alert other drivers.",
                 specificAnimation: false,
                 insideSteps: [
-                    EmergencyStep(title: "High Risk:", text: "Large fire? Stay 40m away. The smoke will alert others—do NOT risk setting the triangle.", callNumber: nil),
+                    EmergencyStep(title: "High Risk:", text: "Large fire? Stay away. The smoke will alert others—do NOT risk retrieving the triangle. Alert other drivers using hand signals or tree branches from a safe distance.", callNumber: nil),
                     EmergencyStep(title: "Low Risk:", text: "Small fire? Set the triangle (1 step per km/h).", callNumber: nil),
                     EmergencyStep(title: "193 (Fire Department):", text: "Call 193 if there is fire, smoke, or fuel leaks.", callNumber: "193"),
                     EmergencyStep(title: "Assistance:", text: "For concessioned highways, dial the road authority's 0800 number.", callNumber: "Emergency Contacts")
@@ -412,7 +437,8 @@ class EmergencyManager {
                 specificAnimation: false,
                 insideSteps: [
                     EmergencyStep(title: "Signaling:", text: "Turn on hazard lights. Place the warning triangle at a distance equal to the speed limit (min. 30m). If unavailable, use tree branches or a flashlight from a safe distance off-road.", callNumber: nil),
-                    EmergencyStep(title: "Oil Spill:", text: "Cover oil patches with sand or dirt to prevent other cars from skidding.", callNumber: nil)
+                    EmergencyStep(title: "Oil Spill:", text: "Cover oil patches with sand or dirt to prevent other cars from skidding.", callNumber: nil),
+                    EmergencyStep(title: "", text: "Do not remain inside the vehicle on the highway, look for a safe place away of the road.", callNumber: nil)
                 ],
                 warning: "",
                 warningBefore: false,
@@ -460,7 +486,7 @@ class EmergencyManager {
                         callNumber: ""
                     ),
                     EmergencyStep(
-                        title: "198 (State Highway Police):",
+                        title: "190 (Military Police):",
                         text: "Call for help to clear the road on State highways.",
                         callNumber: "Emergency Contacts"
                     )
@@ -647,15 +673,15 @@ class EmergencyManager {
             )
         ]
         self.immediateEmergencies = [
-            Emergency(title: "Trauma Life Support", image: "cross.case.fill", steps: medicalSteps, category: 1, color: Color("Medical"), color2: Color("Medical")),
-            Emergency(title: "CPR Resuscitation", image: "heart.fill", steps: cprSteps, category: 1, color: Color("CPREmergency"), color2: Color("CPREmergency2")),
-            Emergency(title: "Vehicle Fire", image: "flame.fill", steps: vehicleFireSteps, category: 1, color: Color("VehicleFire"), color2: Color("VehicleFire2")),
-            Emergency(title: "Animal Hit", image: "pawprint.fill", steps: animalHitSteps, category: 1, color: Color("AnimalHit"), color2: Color("AnimalHit")),
-            Emergency(title: "Disabled Vehicle", image: "exclamationmark.octagon.fill", steps: disabledVehicleSteps, category: 1, color: Color("DisabledVehicle"), color2: Color("DisabledVehicle2"))
+            Emergency(title: "Trauma Life Support", image: "cross.case.fill", steps: medicalSteps, category: 1, color: Color("Medical"), color2: Color("Medical"), links: [URLLink(title: "PHTLS Article", url: "https://tcc.univaco.edu.br/admin/uploads/2024_1%20Atendimento%20Pr%C3%A9-Hospitalar%20ao%20Trauma%20(PHTLS).pdf"), URLLink(title: "DETRAN First Aid Guidelines", url: "https://www.detran.pa.gov.br/files/educacao/cursos/primeirossocorros.pdf"),URLLink(title: "Spinal Injury - Jaw Thrust", url: "https://www.youtube.com/watch?v=PdkgnRCoci4")]),
+            Emergency(title: "CPR Resuscitation", image: "heart.fill", steps: cprSteps, category: 1, color: Color("CPREmergency"), color2: Color("CPREmergency2"), links: [URLLink(title:"CPR Manual for Adults: Manual MSD",url:"https://www.msdmanuals.com/pt/profissional/medicina-de-cuidados-cr%C3%ADticos/parada-card%C3%ADaca-e-reanima%C3%A7%C3%A3o-cardiopulmonar-rcp/reanima%C3%A7%C3%A3o-cardiopulmonar-rcp-em-adultos"), URLLink(title: "NHS Guidelines for Hands-Only CPR", url: "https://www.nhs.uk/tests-and-treatments/first-aid/cpr/")]),
+            Emergency(title: "Vehicle Fire", image: "flame.fill", steps: vehicleFireSteps, category: 1, color: Color("VehicleFire"), color2: Color("VehicleFire2"), links: [URLLink(title: "How to deal with a vehicle fire", url: "https://innovebrasil.org.br/carro-pegou-fogo/")]),
+            Emergency(title: "Animal Hit", image: "pawprint.fill", steps: animalHitSteps, category: 1, color: Color("AnimalHit"), color2: Color("AnimalHit"), links: [URLLink(title: "GOV.BR: Injured Animal", url: "https://www.ms.gov.br/noticias/o-que-faco-se-encontrei-um-animal-silvestre-ferido-imasul-faz-orientacoes-e-recomenda-acionar-a-pma")]),
+            Emergency(title: "Disabled Vehicle", image: "exclamationmark.octagon.fill", steps: disabledVehicleSteps, category: 1, color: Color("DisabledVehicle"), color2: Color("DisabledVehicle2"), links: [URLLink(title: "GOV.BR: Accidents", url: "https://www.gov.br/prf/pt-br/noticias/estaduais/parana/anteriores/2021/novembro/prf-orienta-motoristas-sobre-como-agir-em-casos-de-acidentes")])
         ]
         self.vehicleEmergencies = [
-            Emergency(title: "Flat Tire", image: "tire", steps: flatTireSteps, category: 2, color: Color("FlatTire"), color2: Color("FlatTire")),
-            Emergency(title: "Overheating", image: "thermometer.high", steps: overheatingSteps, category: 2, color: Color("Overheating"), color2: Color("Overheating2"))]
+            Emergency(title: "Flat Tire", image: "tire", steps: flatTireSteps, category: 2, color: Color("FlatTire"), color2: Color("FlatTire"), links: []),
+            Emergency(title: "Overheating", image: "thermometer.high", steps: overheatingSteps, category: 2, color: Color("Overheating"), color2: Color("Overheating2"), links: [])]
         self.roadWeatherEmergencies = []
         
     }

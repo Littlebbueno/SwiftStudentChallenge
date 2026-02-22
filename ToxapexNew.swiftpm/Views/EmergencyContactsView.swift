@@ -139,6 +139,8 @@ struct EmergencyContactsView: View {
             .navigationBarTitleDisplayMode(.inline)
             
         }
+        .dynamicTypeSize(...DynamicTypeSize.accessibility1)
+
         .searchable(text: $searchText, placement: .toolbar ,prompt: "Search contacts")
         .toolbar {
             DefaultToolbarItem(kind: .search, placement: .topBarTrailing)
@@ -199,7 +201,7 @@ struct EmergencyContactsView: View {
                 
                 
             }
-            .dynamicTypeSize(...DynamicTypeSize.xLarge)
+//            .dynamicTypeSize(...DynamicTypeSize.xLarge)
             .padding(20)
             .frame(minHeight: 50)
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -244,7 +246,7 @@ struct EmergencyContactsView: View {
                 
                 
             }
-            .dynamicTypeSize(...DynamicTypeSize.xLarge)
+//            .dynamicTypeSize(...DynamicTypeSize.xLarge)
             .padding(16)
             .frame(minHeight: 80)
             .frame(maxWidth: .infinity, alignment: .leading)

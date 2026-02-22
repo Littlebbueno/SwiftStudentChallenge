@@ -71,20 +71,16 @@ struct AcessiblitySheetView: View {
                         RoundedRectangle(cornerRadius: 20)
                             .foregroundColor(Color(.secondarySystemGroupedBackground))
                     }
-
-                    
                     if acessibilityChoice {
-                        VStack(spacing: 30) {
-                            Text("What eye do you need to the assistant to check while driving?")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                            
-                            HStack(spacing: 100) {
-                                eyeButton(title: "Left Eye", isRight: false)
-                                eyeButton(title: "Right Eye", isRight: true)
-                            }
+                    Text("What eye do you need to the assistant to check while driving?")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    
+                        HStack(spacing: 100) {
+                            eyeButton(title: "Left Eye", isRight: false)
+                            eyeButton(title: "Right Eye", isRight: true)
                         }
-                        .transition(.opacity.combined(with: .scale))
+                            .transition(.opacity.combined(with: .scale))
                     }
                     
                     Spacer()
@@ -109,6 +105,7 @@ struct AcessiblitySheetView: View {
                 }
                 .padding()
             }
+            .dynamicTypeSize(...DynamicTypeSize.accessibility1)
             .navigationTitle("Accessibility Settings")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

@@ -10,6 +10,8 @@ import AVFoundation
 struct AttentionView: View {
     @State var eyeTracker = ARFaceManager()
     @State var eyeTrackerVision = EyeTracker()
+    
+    let cornerRadiusButtons: CGFloat = 24
 
     @State var editedMode: Bool = false
     // false == Vision, true == ARKit
@@ -40,14 +42,16 @@ struct AttentionView: View {
     }
     var body: some View {
         ZStack {
-            Image("imageExample2")
+            Color.black.ignoresSafeArea()
+            // Photo by Isaac Mitchell on Pexels
+            Image("imageBack4")
                 .resizable()
                 .containerRelativeFrame(.horizontal) { length, axis in
                     length * 1
                 }
                 .clipped()
                 .ignoresSafeArea()
-                .opacity(colorScheme == .dark ? 0.8 : 1)
+                .opacity(colorScheme == .dark ? 0.7 : 0.8)
             LinearGradient(
                 stops: [
                     .init(color: .black, location: 0),
@@ -70,11 +74,14 @@ struct AttentionView: View {
             }else{
                 AttentionVisionView(eyeTracker: self.eyeTrackerVision, playing: self.$playing, audioPlayer: audioPlayer)
             }
-            VStack {
+            VStack() {
                 Spacer()
                 if self.playing == false {
                     HStack {
                         buttonAcessibility
+                            .containerRelativeFrame(.horizontal) { length, axis in
+                                length * 0.50
+                            }
                         buttonExtra
                     }
                     .padding(.bottom, 80)
@@ -86,7 +93,8 @@ struct AttentionView: View {
                 .opacity(self.playing ? 0.4 : 0)
             
         }
-        //para o celular não desligar durante a viagem por falta de interação.
+        .dynamicTypeSize(...DynamicTypeSize.accessibility2)
+//        .animation(.easeInOut(duration: 0.05), value: self.eyeTrackerToCheck)
         .onAppear {
             UIApplication.shared.isIdleTimerDisabled = true
         }
@@ -137,26 +145,37 @@ struct AttentionView: View {
     
     var informativePart: some View {
         VStack {
-            
-            if eyeTrackerToCheck == .nofaceDetected {
-                Text("NO FACE DETECTED")
+            if self.playing {
+                if eyeTrackerToCheck == .nofaceDetected {
+                    Text("NO FACE DETECTED")
+                        .font(.system(size: 24, weight: .bold))
+                        .foregroundColor(Color("NoFaceDetected2"))
+                    
+                    Text("For best results, securely mount your phone and keep your face centered. Ensure there is adequate lighting for face detection.")
+                        .dynamicTypeSize(...DynamicTypeSize.xxLarge)
+                        .font(.caption)
+                        .fontWeight(.medium)
+                }else {
+                    Text(eyeTrackerToCheck == .closed ? "EYES CLOSED" : "EYES OPEN")
+                        .font(.system(size: 24, weight: .bold))
+                        .foregroundColor(eyeTrackerToCheck == .closed ? Color("ClosedEyes2") : Color("OpenEyes2"))
+                    
+                    Text("Keep the device securely in place on the dashboard.")
+                        .dynamicTypeSize(...DynamicTypeSize.xxLarge)
+                        .font(.caption)
+                        .fontWeight(.medium)
+                    
+                }
+            }
+            else {
+                Text("ASSISTANT OFF")
                     .font(.system(size: 24, weight: .bold))
                     .foregroundColor(Color("NoFaceDetected2"))
                 
-                Text("For best results, securely mount your phone and keep your face centered. Ensure there is adequate lighting for face detection.")
+                Text("To start a session, tap the white button below.")
                     .dynamicTypeSize(...DynamicTypeSize.xxLarge)
                     .font(.caption)
                     .fontWeight(.medium)
-            }else {
-                Text(eyeTrackerToCheck == .closed ? "EYES CLOSED" : "EYES OPEN")
-                    .font(.system(size: 24, weight: .bold))
-                    .foregroundColor(eyeTrackerToCheck == .closed ? Color("ClosedEyes2") : Color("OpenEyes2"))
-                
-                Text("Keep the device securely in place on the dashboard.")
-                    .dynamicTypeSize(...DynamicTypeSize.xxLarge)
-                    .font(.caption)
-                    .fontWeight(.medium)
-
             }
         }
         .padding()
@@ -164,66 +183,68 @@ struct AttentionView: View {
             ZStack {
                 RoundedRectangle(cornerRadius: 16)
                     .fill(.ultraThinMaterial)
+//                    .environment(\.colorScheme, .dark)
                 RoundedRectangle(cornerRadius: 16)
-                    .foregroundStyle(Color("CinzaCards").opacity(colorScheme == .light ? 0.3: 0.0))
+                    .foregroundStyle(Color("CinzaCards").opacity(colorScheme == .light ? 0.4: 0.0))
             }
                 
         )
     }
     
     var statusIndicator: some View {
-        if eyeTrackerToCheck == .nofaceDetected {
-            Circle()
-                .foregroundStyle(Color("NoFaceDetected").gradient)
-                .frame(width: 115, height: 115)
-                .overlay(
-                    Image(systemName: "xmark.circle")
-                        .foregroundColor(.white)
-                        .font(.system(size: 50))
-                )
-        }else {
-            Circle()
-                .foregroundStyle((eyeTrackerToCheck == .closed ? Color.red : Color("OpenEyes")).gradient)
-                .frame(width: 115, height: 115)
-                .overlay(
-                    Image(systemName: eyeTrackerToCheck == .closed ? "xmark.circle" : "checkmark.circle")
-                        .foregroundColor(.white)
-                        .font(.system(size: 50))
-                )
+        VStack {
+            if self.playing {
+                if eyeTrackerToCheck == .nofaceDetected {
+                    Circle()
+                        .foregroundStyle(Color("NoFaceDetected").gradient)
+                        .frame(width: 115, height: 115)
+                        .overlay(
+                            Image(systemName: "questionmark.circle")
+                                .foregroundColor(.white)
+                                .font(.system(size: 50))
+                        )
+                }else {
+                    Circle()
+                        .foregroundStyle((eyeTrackerToCheck == .closed ? Color.red : Color("OpenEyes")).gradient)
+                        .frame(width: 115, height: 115)
+                        .overlay(
+                            Image(systemName: eyeTrackerToCheck == .closed ? "xmark.circle" : "checkmark.circle")
+                                .foregroundColor(.white)
+                                .font(.system(size: 50))
+                        )
+                }
+            }
+            else {
+                Circle()
+                    .foregroundStyle(Color("NoFaceDetected").gradient)
+                    .frame(width: 115, height: 115)
+                    .overlay(
+                        Image(systemName: "face.dashed")
+                            .foregroundColor(.white)
+                            .font(.system(size: 50))
+                    )
+                
+            }
         }
     }
     
     var buttonExtra: some View {
-        Button {
-            withAnimation {
-                self.attentionMode.toggle()
+        Menu {
+            Button {
+                self.attentionMode = false
+            } label: {
+                Label("Day Mode", systemImage: "sun.max.fill")
             }
-        }label:{
-            HStack(spacing: 6) {
-                Image(systemName: attentionMode ? "moon.fill" : "sun.max.fill")
-                    .foregroundStyle(.white)
-                Text(attentionMode ? "Night Mode" : "Day Mode")
-                    .font(.footnote)
-                    .fontWeight(.medium)
-                    .foregroundStyle(.white)
-                    .padding(.vertical, 12)
-                Spacer()
-                Image(systemName: "chevron.right")
-                    .font(.caption2)
-                    .foregroundStyle(Color.white.opacity(0.6))
+            Button {
+                self.attentionMode = true
+            } label: {
+                Label("Night Mode", systemImage: "moon.fill")
             }
-            .padding(.horizontal, 8)
-        }
-        .background {
-            ZStack {
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(.ultraThinMaterial)
-                    .opacity(0.3)
-                RoundedRectangle(cornerRadius: 8)
-                    .foregroundStyle(self.attentionMode ? Color("Medical") : Color("VehicleFire2"))
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke(Color.white.opacity(0.3), lineWidth: 0.5)
-            }
+        } label:{
+            Circle()
+                .frame(width: 44)
+                .overlay(Image(systemName: attentionMode ? "moon.fill" : "sun.max.fill").foregroundStyle(.white))
+                .foregroundStyle(self.attentionMode ? Color("NightColor") : Color("DayColor"))
         }
     }
     var buttonAcessibility: some View {
@@ -247,12 +268,13 @@ struct AttentionView: View {
         }
         .background {
             ZStack {
-                RoundedRectangle(cornerRadius: 8)
+                RoundedRectangle(cornerRadius: cornerRadiusButtons)
                     .fill(.ultraThinMaterial)
-                    .opacity(0.3)
-                RoundedRectangle(cornerRadius: 8)
+                    .opacity(0.6)
+                    .environment(\.colorScheme, .dark)
+                RoundedRectangle(cornerRadius: cornerRadiusButtons)
                     .foregroundStyle(self.acessibilityActivated ? Color("OpenEyes") : .clear)
-                RoundedRectangle(cornerRadius: 8)
+                RoundedRectangle(cornerRadius: cornerRadiusButtons)
                     .stroke(Color.white.opacity(0.3), lineWidth: 0.5)
             }
         }
@@ -274,6 +296,6 @@ struct AttentionView: View {
 #Preview {
     NavigationStack {
         AttentionView()
-            .preferredColorScheme(.dark)
+//            .preferredColorScheme(.dark)
     }
 }

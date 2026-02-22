@@ -8,13 +8,13 @@ import PackageDescription
 import AppleProductTypes
 
 let package = Package(
-    name: "Toxapex",
+    name: "RoadHelper",
     platforms: [
         .iOS("26.0")
     ],
     products: [
         .iOSApplication(
-            name: "Toxapex",
+            name: "RoadHelper",
             targets: ["AppModule"],
             bundleIdentifier: "com.marco.Toxapex",
             teamIdentifier: "9ZR7S424TH",
@@ -23,7 +23,6 @@ let package = Package(
             appIcon: .asset("AppIcon"),
             accentColor: .asset("AccentColor"),
             supportedDeviceFamilies: [
-                .pad,
                 .phone
             ],
             supportedInterfaceOrientations: [

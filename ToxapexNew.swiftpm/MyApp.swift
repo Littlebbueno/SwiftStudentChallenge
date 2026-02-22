@@ -27,12 +27,12 @@ struct MyApp: App {
                 .tabItem {
                     Label("Attention", systemImage: "road.lanes.curved.left")
                 }
-                NavigationStack {
-                    ResourcesView()
-                }
-                .tabItem {
-                    Label("Resources", systemImage: "book.pages.fill")
-                }
+//                NavigationStack {
+//                    ResourcesView()
+//                }
+//                .tabItem {
+//                    Label("Resources", systemImage: "book.pages.fill")
+//                }
             }
         }
         .modelContainer(for: ContactModel.self)

@@ -35,10 +35,10 @@ class AudioPlayerAttention {
     }
     
     func speakToPause() {
-        let mensagem = "Pare e descanse um pouco"
+        let mensagem = "Stop and rest for a while."
         let utterance = AVSpeechUtterance(string: mensagem)
-        utterance.voice = AVSpeechSynthesisVoice(language: "pt-BR")
-        utterance.rate = 0.5 // Velocidade da fala
+        utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
+        utterance.rate = 0.5
         utterance.volume = 1.0
 
         synthesizer.speak(utterance)

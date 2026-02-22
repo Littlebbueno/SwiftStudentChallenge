@@ -37,7 +37,7 @@ struct CPRAnimationView: View {
                     }
                     .scaleEffect(isExpanding ? 1.5 : 0.8)
                     .animation(
-                        Animation.easeOut(duration: bpmInterval)
+                        .easeOut(duration: bpmInterval)
                             .repeatForever(autoreverses: false),
                         value: isExpanding
                     )

@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+
 struct TravelView: View {
     @State var immediateEmergencies: [Emergency]
     @State var roadWeatherEmergencies: [Emergency]
@@ -50,9 +51,11 @@ struct TravelView: View {
         ZStack {
             Color(.systemGroupedBackground)
                 .ignoresSafeArea()
+//                .environment(\.colorScheme, .light)
+                
             VStack {
                 LinearGradient(
-                    colors: [Color.orange, Color("FlatTire"), .clear],
+                    colors: [Color("OuroQueimado").opacity(0.8), Color("FlatTire2").opacity(0.8), .clear],
                     startPoint: animateGradient ? .topLeading : .topTrailing,
                     endPoint: .bottom
                 )
@@ -62,10 +65,10 @@ struct TravelView: View {
                     }
                 }
                 .offset(y: -300)
-                .opacity(colorScheme == .dark ? 0.6 : 0.6)
+                .opacity(0.6)
                 Spacer()
             }
-//            Image("imageExample2")
+//            Image("imageBack4")
 //                .resizable()
 //                .containerRelativeFrame(.horizontal) { length, axis in
 //                    length * 1
@@ -128,6 +131,7 @@ struct TravelView: View {
                 }
             }
         }
+        .dynamicTypeSize(...DynamicTypeSize.accessibility2)
         .fullScreenCover(item: $selectedEmergency) { emergencyItem in
             NavigationStack(path: $path) {
                 EmergencyView(emergency: emergencyItem, path: $path)
