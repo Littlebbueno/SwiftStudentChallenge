@@ -60,7 +60,10 @@ struct AttentionVisionView: View {
                         }
                         .padding()
                         .tint(Color.white)
-                        .buttonStyle(.glassProminent)
+                        .clipShape(.capsule)
+                        .modifier(
+                            ConditionalButtonModifierProminent()
+                        )
                     }
                     ZStack {
                         circleAlert(number: "1")
@@ -176,7 +179,10 @@ struct AttentionVisionView: View {
 
         }
         .tint(.white)
-        .buttonStyle(.glassProminent)
+        .clipShape(.capsule)
+        .modifier(
+            ConditionalButtonModifierProminent()
+        )
     }
     
     var buttonCloseAssistant: some View {

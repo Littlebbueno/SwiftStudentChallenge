@@ -143,7 +143,9 @@ struct EmergencyContactsView: View {
 
         .searchable(text: $searchText, placement: .toolbar ,prompt: "Search contacts")
         .toolbar {
-            DefaultToolbarItem(kind: .search, placement: .topBarTrailing)
+            if #available(iOS 26, *) {
+                DefaultToolbarItem(kind: .search, placement: .topBarTrailing)
+            }
             ToolbarItem {
                 Button {
                     self.showContactPicker = true

@@ -14,8 +14,8 @@ struct TravelView: View {
     @State var vehicleEmergencies: [Emergency]
     
     let colorCardEmergencyContacts = Color("AlertColor")
-    @State var showDescriptionApp: Bool = false
     @State var selectedEmergency: Emergency?
+    @State var showInitialOnboarding: Bool = false
     
     @Environment(\.colorScheme) var colorScheme
     
@@ -116,18 +116,21 @@ struct TravelView: View {
             }
             .searchable(text: self.$searchText ,placement: .automatic , prompt: "Search emergencies")
             .navigationTitle("Travel")
-//            .toolbar {
-//                ToolbarItem(placement: .primaryAction){
-//                    Button{
-//                        self.showDescriptionApp = true
-//                    }label: {
-//                        Image(systemName: "info.circle")
-//                    }
-//                }
-//            }
-            .sheet(isPresented: $showDescriptionApp) {
+            .sheet(isPresented: $showInitialOnboarding){
                 NavigationStack {
-                    DescriptionAppView()
+                    InitialOnboardingView()
+                        .presentationCornerRadius(35)
+                }
+            }
+            .toolbar{
+                ToolbarItem(placement: .primaryAction){
+                    Button{
+                        self.showInitialOnboarding = true
+                    }label: {
+                        Image(systemName: "info.circle")
+                    }
+                    .tint(Color.primary)
+
                 }
             }
         }

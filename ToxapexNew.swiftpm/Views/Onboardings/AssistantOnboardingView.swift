@@ -73,8 +73,11 @@ struct AssistantOnboardingView: View {
                                 0.5 * length
                             }
                     }
-                    .tint(Color("AccentColor2"))
-                    .buttonStyle(.glassProminent)
+                    .tint(Color("AccentColorBlue2"))
+                    .clipShape(.capsule)
+                    .modifier(
+                        ConditionalButtonModifierProminent()
+                    )
                     .padding(.bottom)
                 }
                 .navigationTitle("Attention Assistant")
@@ -86,6 +89,7 @@ struct AssistantOnboardingView: View {
                         }label:{
                             Image(systemName: "xmark")
                         }
+                        .tint(Color.primary)
                     }
                 }
                 .onDisappear {

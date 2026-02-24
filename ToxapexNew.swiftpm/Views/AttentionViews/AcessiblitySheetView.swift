@@ -99,8 +99,11 @@ struct AcessiblitySheetView: View {
                             }
                         
                     }
-                    .tint(Color("AccentColor2"))
-                    .buttonStyle(.glassProminent)
+                    .tint(Color("AccentColorBlue2"))
+                    .clipShape(.capsule)
+                    .modifier(
+                        ConditionalButtonModifierProminent()
+                    )
                     
                 }
                 .padding()
@@ -115,6 +118,7 @@ struct AcessiblitySheetView: View {
                     }label:{
                         Image(systemName: "xmark")
                     }
+                    .tint(Color.primary)
                 }
             }
         }

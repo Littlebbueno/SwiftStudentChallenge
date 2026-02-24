@@ -19,19 +19,9 @@ class AudioPlayerAttention {
     }
     
     func wakeUpSound() {
-//        AudioServicesPlaySystemSound(1005)
-//        let mensagem = "Are you awake?"
-//        let utterance = AVSpeechUtterance(string: mensagem)
-//        utterance.voice = AVSpeechSynthesisVoice(language: "en-US")
-//        utterance.rate = 0.5 // Velocidade da fala
-//        utterance.volume = 1.0
-//
-//        synthesizer.speak(utterance)
-//
-//        try? AVAudioSession.sharedInstance().setActive(true)
+
         player?.play()
         player?.numberOfLoops = -1
-//        print("Pergunta emitida: \(Date())")
     }
     
     func speakToPause() {

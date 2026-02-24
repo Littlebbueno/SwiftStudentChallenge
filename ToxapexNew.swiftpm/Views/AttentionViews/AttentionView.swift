@@ -21,6 +21,7 @@ struct AttentionView: View {
     @AppStorage("assistantModel") var attentionMode: Bool = false
     @State private var showAcessibilitySheet: Bool = false
     @State private var showAssistantOnboarding: Bool = false
+    @State private var showAlertChangeModel: Bool = false
     @State var playing: Bool = false
     @AppStorage("firstOnboarding") var firstOnboarding: Bool = true
     
@@ -93,6 +94,15 @@ struct AttentionView: View {
                 .opacity(self.playing ? 0.4 : 0)
             
         }
+        .alert("Mode Updated", isPresented: $showAlertChangeModel) {
+            Button("Dismiss", role: .cancel) { }
+        } message: {
+            if self.attentionMode {
+                Text("Switched to Night Mode, it uses a model optimized for low-light environments.")
+            } else {
+                Text("Switched to Day Mode, it uses a model optimized for daylight environments.")
+            }
+        }
         .dynamicTypeSize(...DynamicTypeSize.accessibility2)
 //        .animation(.easeInOut(duration: 0.05), value: self.eyeTrackerToCheck)
         .onAppear {
@@ -138,6 +148,8 @@ struct AttentionView: View {
                 }label: {
                     Image(systemName: "info.circle")
                 }
+                .tint(Color.primary)
+
             }
         }
         .toolbarVisibility(self.playing ? .hidden : .visible, for: .tabBar)
@@ -232,11 +244,13 @@ struct AttentionView: View {
         Menu {
             Button {
                 self.attentionMode = false
+                self.showAlertChangeModel = true
             } label: {
                 Label("Day Mode", systemImage: "sun.max.fill")
             }
             Button {
                 self.attentionMode = true
+                self.showAlertChangeModel = true
             } label: {
                 Label("Night Mode", systemImage: "moon.fill")
             }

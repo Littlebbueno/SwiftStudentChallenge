@@ -261,7 +261,7 @@ class EmergencyManager {
                 stepDescription: "Assess the victim’s blood flow and control any remaining bleeding to prevent shock.",
                 specificAnimation: false,
                 insideSteps: [
-                    EmergencyStep(title: "Check Circulation:", text: "Check for a pulse. Then, press down on a fingernail until the bed turns white and release; color should return within 2 seconds.", callNumber: nil, image: "imageCPR"),
+                    EmergencyStep(title: "Check Circulation:", text: "Check for a pulse. Then, press down on a fingernail until the bed turns white and release; color should return within 2 seconds.", callNumber: nil, image: "imagePulse"),
                     EmergencyStep(title: "Stop Bleeding:", text: "Identify and control any external bleeding.", callNumber: nil),
                     EmergencyStep(title: "Maintain Heat:", text: "Keep the victim warm with blankets or clothing to help prevent hypothermia and shock.", callNumber: nil)
                 ],

@@ -10,7 +10,7 @@ import AppleProductTypes
 let package = Package(
     name: "RoadHelper",
     platforms: [
-        .iOS("26.0")
+        .iOS("18.0")
     ],
     products: [
         .iOSApplication(
@@ -23,7 +23,8 @@ let package = Package(
             appIcon: .asset("AppIcon"),
             accentColor: .asset("AccentColor"),
             supportedDeviceFamilies: [
-                .phone
+                .phone,
+                .pad
             ],
             supportedInterfaceOrientations: [
                 .portrait,
@@ -47,5 +48,5 @@ let package = Package(
             ]
         )
     ],
-    swiftLanguageVersions: [.version("6")]
+    swiftLanguageModes: [.version("6")]
 )

@@ -69,6 +69,7 @@ struct EmergencyView: View {
                     }label:{
                         Image(systemName: "xmark")
                     }
+                    .tint(Color.primary)
                 }
             }
             .background {
@@ -104,7 +105,10 @@ struct EmergencyView: View {
                             .padding(.horizontal,18)
                     }
                     .tint(Color("AlertColor2"))
-                    .buttonStyle(.glassProminent)
+                    .clipShape(.capsule)
+                    .modifier(
+                        ConditionalButtonModifierProminent()
+                    )
                     .padding()
                     .dynamicTypeSize(...DynamicTypeSize.accessibility2)
                 }
