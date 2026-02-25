@@ -148,9 +148,11 @@ struct TravelView: View {
                             EmergencyView(emergency: self.immediateEmergencies[2], path: $path)
                         case .animalHit:
                             EmergencyView(emergency: self.immediateEmergencies[3], path: $path)
-                        case .disabledVehicle:
+                        case .moveVictim:
                             EmergencyView(emergency: self.immediateEmergencies[4], path: $path)
+
                         }
+                        
                     }
             }
         }

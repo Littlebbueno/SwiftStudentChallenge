@@ -297,7 +297,7 @@ struct EmergencyView: View {
                             .resizable()
                             .scaledToFill()
                             .containerRelativeFrame(.vertical) { length, axis in
-                                length * 0.35
+                                length * 0.30
                             }
                             .clipped()
                             .cornerRadius(15)
@@ -308,6 +308,25 @@ struct EmergencyView: View {
                     if let linkTo = step.linkTo{
                         cardToOtherView(linkTo: linkTo)
                             .padding(.top, 10)
+                    }
+                    if step.callStep != ""{
+                        Button{
+                            callNumber(phoneNumber: step.callStep)
+                        }label:{
+                            HStack {
+                                Text("Call: \(step.callStep)")
+                                    .padding()
+                                    .font(.headline)
+                                    .fontWeight(.bold)
+                            }
+                            .frame(maxWidth: .infinity)
+                            .frame(height: 45)
+                            .background((emergency.color == Color("DisabledVehicle") || emergency.color == Color("VehicleFire") || emergency.color == Color("Overheating"))  ? Color("AlertColor3") : Color("AlertColor2"))
+                            .foregroundStyle(.white)
+                            .cornerRadius(10)
+                            .shadow(color: .black.opacity(0.15), radius: 10, y: 5)
+                        }
+                        .padding(.vertical, 4)
                     }
                 }
                 
@@ -367,6 +386,20 @@ struct EmergencyView: View {
                 .frame(height: 45)
                 .background(Color("VehicleFire3"))
                 .foregroundStyle(.black)
+                .cornerRadius(10)
+                .shadow(color: .black.opacity(0.15), radius: 10, y: 5)
+            }
+            if linkTo == navigationPath.moveVictim {
+                HStack {
+                    Text("Safely Moving a Victim")
+                        .padding()
+                        .font(.headline)
+                        .fontWeight(.bold)
+                }
+                .frame(maxWidth: .infinity)
+                .frame(height: 45)
+                .background(Color.blue)
+                .foregroundStyle(.white)
                 .cornerRadius(10)
                 .shadow(color: .black.opacity(0.15), radius: 10, y: 5)
             }

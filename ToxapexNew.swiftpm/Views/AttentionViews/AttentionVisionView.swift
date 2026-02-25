@@ -74,9 +74,9 @@ struct AttentionVisionView: View {
                             .scaleEffect(closedFramesCounter >= 20 ? 1.0 : 0.5)
                             .opacity(closedFramesCounter >= 20 ? 1.0 : 0.0)
                         
-                        circleAlert(number: "3")
-                            .scaleEffect(closedFramesCounter >= 30 ? 1.0 : 0.5)
-                            .opacity(closedFramesCounter >= 30 ? 1.0 : 0.0)
+//                        circleAlert(number: "3")
+//                            .scaleEffect(closedFramesCounter >= 30 ? 1.0 : 0.5)
+//                            .opacity(closedFramesCounter >= 30 ? 1.0 : 0.0)
                     }
                     .animation(.interpolatingSpring(stiffness: 100, damping: 10), value: closedFramesCounter)
                     .offset(y: -40)
@@ -101,21 +101,21 @@ struct AttentionVisionView: View {
             }
 
             if eyeTracker.eyeStatus != .opened {
-                if closedFramesCounter < 35 {
+                if closedFramesCounter < 25 {
                     closedFramesCounter += 1
                 }
             } else {
                 closedFramesCounter = max(0, closedFramesCounter - 2)
             }
 
-            if closedFramesCounter >= 35 && !isDrowsy {
+            if closedFramesCounter >= 25 && !isDrowsy {
                 isDrowsy = true
                 audioPlayer.wakeUpSound()
             } else if closedFramesCounter == 0 && isDrowsy {
                 isDrowsy = false
                 audioPlayer.speakToPause()
             }
-            if closedFramesCounter <= 15 && isDrowsy {
+            if closedFramesCounter <= 5 && isDrowsy {
                 guard let player = audioPlayer.player else { return }
                 if player.isPlaying {
                     audioPlayer.player?.stop()

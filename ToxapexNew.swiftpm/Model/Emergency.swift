@@ -74,6 +74,19 @@ class EmergencyStep: Identifiable {
         self.warningBefore = warningBefore ?? false
         self.linkTo = linkTo
     }
+    
+    init(title: String, image: String, stepDescription: String, specificAnimation: Bool, insideSteps: [EmergencyStep]?, warning: String, warningBefore: Bool?, linkTo: navigationPath?, callNumber : String) {
+        self.title = title
+        self.image = image
+        self.stepDescription = stepDescription
+        self.specificAnimation = specificAnimation
+        self.insideSteps = insideSteps ?? []
+        self.callStep = callNumber
+        self.warning = warning
+        self.warningBefore = warningBefore ?? false
+        self.linkTo = linkTo
+    }
+    
     init(title: String?, text: String, callNumber: String?) {
         self.title = title ?? ""
         self.image = ""
@@ -127,7 +140,28 @@ class EmergencyManager {
                 EmergencyStep(title: "192 (SAMU):", text: "Best for medical emergencies and victim stabilization.", callNumber: "192")
             ], linkTo: nil),
             EmergencyStep(title: "Safety First", image: "", stepDescription: "Before taking any action, ensure the area is safe for you. Do not put yourself at risk. If the scene is unstable, wait for professional emergency services.", specificAnimation: false, insideSteps: [], linkTo: nil),
-            EmergencyStep(title: "Positioning for CPR", image: "imageCPR", stepDescription: "Only if the victim is unresponsive and NOT breathing.", specificAnimation: false, insideSteps: [EmergencyStep(title: "Positioning:", text: "Place the victim on their back on a firm surface.", callNumber: nil), EmergencyStep(title: "Your Position:", text: "Kneel beside the victim’s chest.", callNumber: nil), EmergencyStep(title: "Hand Placement:", text: "Place the heel of one hand on the center of the chest. Interlock the other hand on top.", callNumber: nil),EmergencyStep(title: nil, text: "Position your shoulders directly above your hands and lock your elbows.", callNumber: nil), EmergencyStep(title: "Compression:", text: "Press straight down (2 inches/5cm) using body weight. Let the chest recoil fully between compressions.", callNumber: nil), EmergencyStep(title: nil, text: "Go to next step to keep the rhythm of 100-120 compression per minute.", callNumber: nil)], linkTo: nil),
+            EmergencyStep(
+                title: "Firm Surface",
+                image: "",
+                stepDescription: "Place the victim on their back on a firm, flat surface (such as the ground).",
+                specificAnimation: false,
+                insideSteps: [
+                    EmergencyStep(
+                        title: "If moving is necessary:",
+                        text: "Keep the head, neck, and back aligned. Avoid twisting the body at all costs to prevent spinal damage.",
+                        callNumber: nil
+                    ),
+                    EmergencyStep(
+                        title: "",
+                        text: "For more details on how to move someone safely, see 'Safely Moving a Victim'.",
+                        callNumber: nil
+                    ),
+                ],
+                warning: "",
+                warningBefore: false,
+                linkTo: .moveVictim
+            ),
+            EmergencyStep(title: "Positioning for CPR", image: "imageCPR", stepDescription: "Only if the victim is unresponsive and NOT breathing.", specificAnimation: false, insideSteps: [ EmergencyStep(title: "Your Position:", text: "Kneel beside the victim’s chest.", callNumber: nil), EmergencyStep(title: "Hand Placement:", text: "Place the heel of one hand on the center of the chest. Interlock the other hand on top.", callNumber: nil),EmergencyStep(title: nil, text: "Position your shoulders directly above your hands and lock your elbows.", callNumber: nil), EmergencyStep(title: "Compression:", text: "Press straight down (2 inches/5cm) using body weight. Let the chest recoil fully between compressions.", callNumber: nil), EmergencyStep(title: nil, text: "Go to next step to keep the rhythm of 100-120 compression per minute.", callNumber: nil)], linkTo: nil),
             EmergencyStep(title: "Perform Hands-Only CPR", image: "", stepDescription: "Keep up with the rhythm of the animation.", specificAnimation: true, insideSteps: [EmergencyStep(title: nil, text: "If possible, rotate rescuers every 2 minutes to maintain the quality of CPR.", callNumber: nil)], warning: "Do not stop until help arrives or the person starts breathing again.", warningBefore: false, linkTo: nil)
         ]
         let medicalSteps = [
@@ -672,16 +706,96 @@ class EmergencyManager {
                 linkTo: nil
             )
         ]
+        
+        let moveVictimSteps = [
+            EmergencyStep(
+                title: "When to Move the Victim",
+                image: "",
+                stepDescription: "Only move a victim if their current location poses an immediate threat to their life. In all other cases, DO NOT move the victim and call 192.",
+                specificAnimation: false,
+                insideSteps: [
+                    EmergencyStep(title: "Immediate danger:", text: "Such as fire, vehicle submersion, or structural collapse.", callNumber: nil),
+                    EmergencyStep(title: "CPR:", text: "To perform life-saving CPR (requires a firm, flat surface).", callNumber: nil),
+                    EmergencyStep(title: "Extreme Isolation:", text: "When it is certain that emergency help cannot reach the location.", callNumber: nil)
+                ],
+                warning: "Moving a victim incorrectly can severely worsen their condition.",
+                warningBefore: true,
+                linkTo: nil,
+                callNumber: "192"
+            ),
+            EmergencyStep(
+                title: "Prepare the Victim",
+                image: "",
+                stepDescription: "Before moving, assess the victim's consciousness and ensure your own safety first.",
+                specificAnimation: false,
+                insideSteps: [
+                    EmergencyStep(title: "Communicate:", text: "If the victim is conscious, explain what you are going to do and ask for their cooperation.", callNumber: nil)
+                ],
+                warning: "Support the neck and avoid twisting the head or body during movement.",
+                warningBefore: false,
+                linkTo: nil
+            ),
+            EmergencyStep(
+                title: "Climate Protection",
+                image: "",
+                stepDescription: "Shield the casualty from extreme cold or heat while waiting for help or preparing to move.",
+                specificAnimation: false,
+                insideSteps: [
+                    EmergencyStep(title: "Against Cold:", text: "Cover with a coat, blanket, or insulation blanket.", callNumber: nil),
+                    EmergencyStep(title: "Against Heat:", text: "Improvise a sunshade with an umbrella or use your own shadow to cover them.", callNumber: nil),
+                    EmergencyStep(title: "Moving for Exposure:", text: "Only move them if they face real risk due to long-time exposure to cold.", callNumber: nil)
+                ],
+                warning: "",
+                warningBefore: false,
+                linkTo: nil
+            ),
+            EmergencyStep(
+                title: "Positioning for Removal",
+                image: "",
+                stepDescription: "Follow these steps to bring an unconscious victim to a lifting position safely. Rautek Maneuver is the technical name for this life-saving technique.",
+                specificAnimation: true,
+                insideSteps: [
+                    EmergencyStep(title: "", text: "Lay the victim’s arms along their body.", callNumber: nil),
+                    EmergencyStep(title: "", text: "Kneel behind their head. Slide one hand under their neck and the other between their shoulder blades.", callNumber: nil),
+                    EmergencyStep(title: "", text: "Carefully lift their head and shoulders and slide yourself closer.", callNumber: nil),
+                    EmergencyStep(title: "", text: "Raise the victim's back to bring them to a sitting position. Support their shoulders.", callNumber: nil)
+                ],
+                warning: "",
+                warningBefore: false,
+                linkTo: nil
+            ),
+            EmergencyStep(
+                title: "Executing the Drag",
+                image: "imageRauteck",
+                stepDescription: "",
+                specificAnimation: true,
+                insideSteps: [
+                    EmergencyStep(
+                        title: "The Grip and Support",
+                        text: "Reach under the armpits. If the victim is heavy, grip one forearm with both hands. If you can manage the weight, use one hand to support the chin/neck while the other grips the forearm.",
+                        callNumber: nil
+                    ),
+                    EmergencyStep(title: "", text: "Crouch with the victim between your legs, keep your back straight, and stand up.", callNumber: nil),
+                    EmergencyStep(title: "", text: "Walk backward, trailing the victim with you, while watching for obstacles behind.", callNumber: nil)
+                ],
+                warning: "Do not let go of the victim's arm until you reach a secure area.",
+                warningBefore: false,
+                linkTo: nil
+            )
+        ]
         self.immediateEmergencies = [
-            Emergency(title: "Trauma Life Support", image: "cross.case.fill", steps: medicalSteps, category: 1, color: Color("Medical"), color2: Color("Medical"), links: [URLLink(title: "PHTLS Article", url: "https://tcc.univaco.edu.br/admin/uploads/2024_1%20Atendimento%20Pr%C3%A9-Hospitalar%20ao%20Trauma%20(PHTLS).pdf"), URLLink(title: "DETRAN First Aid Guidelines", url: "https://www.detran.pa.gov.br/files/educacao/cursos/primeirossocorros.pdf"),URLLink(title: "Spinal Injury - Jaw Thrust", url: "https://www.youtube.com/watch?v=PdkgnRCoci4")]),
+            Emergency(title: "Trauma Life Support", image: "cross.case.fill", steps: medicalSteps, category: 1, color: Color("Medical"), color2: Color("Medical"), links: [URLLink(title: "PHTLS Article", url: "https://tcc.univaco.edu.br/admin/uploads/2024_1%20Atendimento%20Pr%C3%A9-Hospitalar%20ao%20Trauma%20(PHTLS).pdf"), URLLink(title: "DETRAN First Aid Guidelines", url: "https://www.detraneduca.pr.gov.br/Pagina/Primeiros-Socorros"),URLLink(title: "Spinal Injury - Jaw Thrust", url: "https://www.youtube.com/watch?v=PdkgnRCoci4")]),
             Emergency(title: "CPR Resuscitation", image: "heart.fill", steps: cprSteps, category: 1, color: Color("CPREmergency"), color2: Color("CPREmergency2"), links: [URLLink(title:"CPR Manual for Adults: Manual MSD",url:"https://www.msdmanuals.com/pt/profissional/medicina-de-cuidados-cr%C3%ADticos/parada-card%C3%ADaca-e-reanima%C3%A7%C3%A3o-cardiopulmonar-rcp/reanima%C3%A7%C3%A3o-cardiopulmonar-rcp-em-adultos"), URLLink(title: "NHS Guidelines for Hands-Only CPR", url: "https://www.nhs.uk/tests-and-treatments/first-aid/cpr/")]),
             Emergency(title: "Vehicle Fire", image: "flame.fill", steps: vehicleFireSteps, category: 1, color: Color("VehicleFire"), color2: Color("VehicleFire2"), links: [URLLink(title: "How to deal with a vehicle fire", url: "https://innovebrasil.org.br/carro-pegou-fogo/")]),
             Emergency(title: "Animal Hit", image: "pawprint.fill", steps: animalHitSteps, category: 1, color: Color("AnimalHit"), color2: Color("AnimalHit"), links: [URLLink(title: "GOV.BR: Injured Animal", url: "https://www.ms.gov.br/noticias/o-que-faco-se-encontrei-um-animal-silvestre-ferido-imasul-faz-orientacoes-e-recomenda-acionar-a-pma")]),
-            Emergency(title: "Disabled Vehicle", image: "exclamationmark.octagon.fill", steps: disabledVehicleSteps, category: 1, color: Color("DisabledVehicle"), color2: Color("DisabledVehicle2"), links: [URLLink(title: "GOV.BR: Accidents", url: "https://www.gov.br/prf/pt-br/noticias/estaduais/parana/anteriores/2021/novembro/prf-orienta-motoristas-sobre-como-agir-em-casos-de-acidentes")])
+            Emergency(title: "Safely Moving a Victim", image: "person.fill", steps: moveVictimSteps, category: 1, color: .blue, color2: .blue, links: [URLLink(title: "UniFirst: How to Move an Injured Victim", url: "https://unifirstfirstaidandsafety.com/how-to-move-an-injured-victim/#:~:text=Lay%20the%20victim's%20arms%20along,out%20for%20obstacles%20behind%20you."),
+                URLLink(title: "Rautek Maneuver", url: "https://pt.wikipedia.org/wiki/Chave_de_Rautek")])
         ]
         self.vehicleEmergencies = [
             Emergency(title: "Flat Tire", image: "tire", steps: flatTireSteps, category: 2, color: Color("FlatTire"), color2: Color("FlatTire"), links: []),
-            Emergency(title: "Overheating", image: "thermometer.high", steps: overheatingSteps, category: 2, color: Color("Overheating"), color2: Color("Overheating2"), links: [])]
+            Emergency(title: "Overheating", image: "thermometer.high", steps: overheatingSteps, category: 2, color: Color("Overheating"), color2: Color("Overheating2"), links: []),
+            Emergency(title: "Disabled Vehicle", image: "exclamationmark.octagon.fill", steps: disabledVehicleSteps, category: 1, color: Color("DisabledVehicle"), color2: Color("DisabledVehicle2"), links: [URLLink(title: "GOV.BR: Accidents", url: "https://www.gov.br/prf/pt-br/noticias/estaduais/parana/anteriores/2021/novembro/prf-orienta-motoristas-sobre-como-agir-em-casos-de-acidentes")])
+        ]
         self.roadWeatherEmergencies = []
         
     }

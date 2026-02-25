@@ -5,7 +5,7 @@ enum navigationPath: Hashable {
     case cpr
     case fire
     case animalHit
-    case disabledVehicle
+    case moveVictim
 }
 
 @main
