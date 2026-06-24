@@ -1,5 +1,5 @@
 //
-//  ButtonStart.swift
+//  ButtonsStartClose.swift
 //  RoadHelper
 //
 //  Created by Marco Bueno on 26/02/26.
@@ -28,8 +28,6 @@ struct ButtonStart: View {
 
         }
         .tint(Color.white)
-//        .tint(.white)
-//        .environment(\.colorScheme, .light)
         .clipShape(.capsule)
         .modifier(
             ConditionalButtonModifierProminent()

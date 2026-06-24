@@ -1,6 +1,6 @@
 //
 //  AttentionARKitView.swift
-//  Toxapex
+//  RoadHelper
 //
 //  Created by Marco Bueno on 02/02/26.
 //
@@ -11,14 +11,11 @@ struct AttentionARKitView: View {
     
     @State var eyeTracker : ARFaceManager
     @Binding var playing: Bool
-    // Timer variaveis
     let timer = Timer.publish(every: 0.1, on: .main, in: .common).autoconnect()
     @State private var closedFramesCounter: Int = 0
     @State private var isDrowsy: Bool = false
     let impact = UIImpactFeedbackGenerator(style: .medium)
 
-    
-    //
     @State var audioPlayer: AudioPlayerAttention
 
     
@@ -69,10 +66,6 @@ struct AttentionARKitView: View {
                         circleAlert(number: "2")
                             .scaleEffect(closedFramesCounter >= 20 ? 1.0 : 0.5)
                             .opacity(closedFramesCounter >= 20 ? 1.0 : 0.0)
-                        
-//                        circleAlert(number: "3")
-//                            .scaleEffect(closedFramesCounter >= 30 ? 1.0 : 0.5)
-//                            .opacity(closedFramesCounter >= 30 ? 1.0 : 0.0)
                     }
                     .animation(.interpolatingSpring(stiffness: 100, damping: 10), value: closedFramesCounter)
                     .offset(y: -40)
@@ -87,7 +80,6 @@ struct AttentionARKitView: View {
 
                         }
                         self.isDrowsy = false
-            //            self.synthesizer.stopSpeaking(at: .immediate)
                         audioPlayer.player?.stop()
                         Task {
                             try? await Task.sleep(nanoseconds: 200_000_000)

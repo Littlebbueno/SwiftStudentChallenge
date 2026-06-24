@@ -1,5 +1,5 @@
 //
-//  InitialOnboarding.swift
+//  InitialOnboardingView.swift
 //  RoadHelper
 //
 //  Created by Marco Bueno on 23/02/26.
@@ -58,13 +58,11 @@ struct InitialOnboardingView: View {
                         .foregroundStyle(.primary)
                         .opacity(0.55)
                         .font(.callout)
-//                        .fontWeight(.regular)
                         .multilineTextAlignment(.center)
                         .padding()
                         .background {
                             RoundedRectangle(cornerRadius: 16)
                                 .fill(.ultraThinMaterial)
-//                                .environment(\.colorScheme, .dark)
                         }
                     
                 }

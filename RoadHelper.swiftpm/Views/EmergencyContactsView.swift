@@ -1,6 +1,6 @@
 //
 //  EmergencyContactsView.swift
-//  Toxapex
+//  RoadHelper
 //
 //  Created by Marco Bueno on 16/01/26.
 //
@@ -76,10 +76,6 @@ struct EmergencyContactsView: View {
             
             ScrollView {
                 VStack(alignment: .leading, spacing: 25) {
-//                    Text("Emergency Contacts")
-//                        .font(.largeTitle)
-//                        .fontWeight(.bold)
-//                        .foregroundStyle(.primary)
                     VStack(alignment: .leading, spacing: 8) {
                         ForEach(filteredPrimaryContacts, id: \.id) { contact in
                             cardPrimaryContact(contact: contact)
@@ -91,18 +87,6 @@ struct EmergencyContactsView: View {
                                 .font(.title)
                                 .fontWeight(.bold)
                                 .foregroundStyle(.primary)
-//                            Button {
-//                                self.showContactPicker = true
-//                            }label: {
-//                                Image(systemName: "plus")
-//                                    .fontWeight(.semibold)
-//                                    .padding(8)
-//                                    .foregroundStyle(.white)
-//                            }
-//                            .background {
-//                                Circle()
-//                                    .foregroundStyle(Color("AlertColor2").opacity(1))
-//                            }
                         }
                         if self.filteredPersonalContacts.isEmpty {
                             VStack(alignment: .leading,spacing: 4) {
@@ -206,7 +190,6 @@ struct EmergencyContactsView: View {
                 
                 
             }
-//            .dynamicTypeSize(...DynamicTypeSize.xLarge)
             .padding(20)
             .frame(minHeight: 50)
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -251,7 +234,6 @@ struct EmergencyContactsView: View {
                 
                 
             }
-//            .dynamicTypeSize(...DynamicTypeSize.xLarge)
             .padding(16)
             .frame(minHeight: 80)
             .frame(maxWidth: .infinity, alignment: .leading)

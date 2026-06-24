@@ -1,6 +1,6 @@
 //
-//  EmergencieView.swift
-//  Toxapex
+//  EmergencyView.swift
+//  RoadHelper
 //
 //  Created by Marco Bueno on 14/01/26.
 //
@@ -51,7 +51,6 @@ struct EmergencyView: View {
                                         .font(.caption2)
                                         .multilineTextAlignment(.leading)
                                         .foregroundStyle(Color.secondary)
-                                    //                                Text(link)
                                 }
                             }
                         }
@@ -89,7 +88,6 @@ struct EmergencyView: View {
                 }
                 .ignoresSafeArea()
             }
-            //            .toolbarVisibility(.hidden, for: .tabBar)
             .navigationTitle(emergency.title)
             .navigationBarTitleDisplayMode(.inline)
             .safeAreaInset(edge: .bottom) {

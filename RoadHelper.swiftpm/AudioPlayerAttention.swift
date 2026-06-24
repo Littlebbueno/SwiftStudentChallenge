@@ -1,6 +1,6 @@
 //
 //  AudioPlayerAttention.swift
-//  Toxapex
+//  RoadHelper
 //
 //  Created by Marco Bueno on 19/02/26.
 //
@@ -33,20 +33,18 @@ class AudioPlayerAttention {
         synthesizer.speak(utterance)
 
         try? AVAudioSession.sharedInstance().setActive(true)
-        print("Pergunta emitida: \(Date())")
-
     }
     
     func setupAudio() {
         guard let soundFile = NSDataAsset(name: "alarmSound") else{
-            print("Could not read the file named 'beepSound'")
+            print("Could not load the 'alarmSound' asset")
             return
         }
         do {
             try player = AVAudioPlayer(data: soundFile.data)
             
         }catch{
-            print("ERROr TO INICITIALIZE THE AUDIO PLAYER")
+            print("Failed to initialize the audio player")
         }
     }
 }

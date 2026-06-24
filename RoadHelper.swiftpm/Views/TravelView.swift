@@ -1,6 +1,6 @@
 //
-//  HomeView.swift
-//  Toxapex
+//  TravelView.swift
+//  RoadHelper
 //
 //  Created by Marco Bueno on 29/12/25.
 //
@@ -92,17 +92,6 @@ struct TravelView: View {
                     .padding(.horizontal, 22)
                     .padding(.top, 8)
                     emergencies(items: filteredVehicle)
-//                    HStack {
-//                        Text("Road & Weather Emergencies")
-//                            .font(.subheadline)
-//                            .fontWeight(.semibold)
-//                            .foregroundStyle(Color.secondary)
-//                        Spacer()
-//                    }
-//                    .padding(.horizontal, 22)
-//                    .padding(.top, 8)
-//                    emergencies(items: filteredRoadWeather)
-                    
                 }
             }
             .searchable(text: self.$searchText ,placement: .automatic , prompt: "Search emergencies")
@@ -156,7 +145,6 @@ struct TravelView: View {
                 destination: EmergencyContactsView()
             ){
                 HStack(alignment: .center, spacing: 10) {
-                    // Opções: person.crop.circle.badge.exclamationmark
                     Image(systemName: "person.crop.circle.badge.exclamationmark")
                         .font(.title)
                         .foregroundColor(.white)

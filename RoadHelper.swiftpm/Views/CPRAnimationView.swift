@@ -1,6 +1,6 @@
 //
 //  CPRAnimationView.swift
-//  Toxapex
+//  RoadHelper
 //
 //  Created by Marco Bueno on 04/02/26.
 //
@@ -13,12 +13,9 @@ struct CPRAnimationView: View {
     let bpmInterval = 0.545
     
     let timer = Timer.publish(every: 0.545, on: .main, in: .common).autoconnect()
-//    let timer = Timer.publish(every: 1, on: .main, in: .common).autoconnect()
-    
+
     @State private var audioPlayer: AVAudioPlayer!
-    
-    @State var lastTick = Date.now
-    
+
     var body: some View {
         ZStack {
             Color.clear
@@ -53,24 +50,20 @@ struct CPRAnimationView: View {
             }
         }
         .onReceive(timer) { _ in
-//            let duration = Date.now.timeIntervalSince(lastTick)
-//            print("tick \(duration)")
-//            lastTick = .now
-            
             playPulse()
         }
     }
     
     func setupAudio() {
         guard let soundFile = NSDataAsset(name: "beepSound") else{
-            print("Could not read the file named 'beepSound'")
+            print("Could not load the 'beepSound' asset")
             return
         }
         do {
             try audioPlayer = AVAudioPlayer(data: soundFile.data)
             
         }catch{
-            print("ERROr TO INICITIALIZE THE AUDIO PLAYER")
+            print("Failed to initialize the audio player")
         }
     }
 

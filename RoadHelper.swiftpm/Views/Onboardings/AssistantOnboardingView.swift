@@ -1,6 +1,6 @@
 //
 //  AssistantOnboardingView.swift
-//  Toxapex
+//  RoadHelper
 //
 //  Created by Marco Bueno on 12/02/26.
 //
@@ -52,10 +52,8 @@ struct AssistantOnboardingView: View {
                     VStack {
                         TabView(selection: self.$tabIndex) {
                             FirstOnboardingAssistantView()
-                            //                            .ignoresSafeArea(edges: .all)
                                 .tag(0)
                             AcessibilityOnboardingAssistantView()
-                            //                        .ignoresSafeArea(edges: .all)
                             
                                 .tag(1)
                             DayModesOnboardingAssistantView()
@@ -153,7 +151,6 @@ struct FirstOnboardingAssistantView: View {
                     }
                     Text(attributedString)
                         .font(.subheadline)
-//                        .fontWeight(.semibold)
                     Text("How to use?")
                         .font(.headline)
                         .fontWeight(.bold)
@@ -205,9 +202,6 @@ struct AcessibilityOnboardingAssistantView: View {
                                 .foregroundStyle(Color(.secondarySystemGroupedBackground))
                                 .opacity(0.7)
 
-            //                    .environment(\.colorScheme, .dark)
-//                            RoundedRectangle(cornerRadius: 16)
-//                                .stroke((colorScheme == .light ? Color.black : Color.white).opacity(0.3), lineWidth: 0.5)
                         }
                     
                 }
@@ -255,13 +249,11 @@ struct DayModesOnboardingAssistantView: View {
                         .fontWeight(.regular)
                         .multilineTextAlignment(.center)
                         .opacity(0.6)
-//                        .foregroundStyle(Color.secondary)
                     Text("Night Mode: Powered by infrared sensors, this mode outperforms Day Mode in low-light, but it still requires some ambient light.")
                         .font(.callout)
                         .fontWeight(.regular)
                         .multilineTextAlignment(.center)
                         .opacity(0.6)
-//                        .foregroundStyle(Color.secondary)
 
                 }
                 .padding()
@@ -269,9 +261,6 @@ struct DayModesOnboardingAssistantView: View {
                     RoundedRectangle(cornerRadius: 16)
                         .foregroundStyle(Color(.secondarySystemGroupedBackground))
                         .opacity(0.7)
-    //                    .environment(\.colorScheme, .dark)
-//                    RoundedRectangle(cornerRadius: 16)
-//                        .stroke((colorScheme == .light ? Color.black : Color.white).opacity(0.3), lineWidth: 0.5)
                 }
                 Spacer()
                 Spacer()
@@ -280,58 +269,3 @@ struct DayModesOnboardingAssistantView: View {
         }
     }
 }
-
-//VStack(alignment: .leading, spacing: 20) {
-//    VStack (alignment: .leading, spacing: 6) {
-//        Text("Hello! I'm your Attention Assistant.")
-//            .font(.title)
-//            .fontWeight(.bold)
-//        Text("I use machine learning to monitor your focus while driving and will let you know if you start showing signs of sleepiness.")
-//            .font(.subheadline)
-//        //                                .foregroundStyle(Color.secondary)
-//    }
-//    VStack(alignment: .leading, spacing: 20) {
-//        VStack(alignment:.leading, spacing: 8) {
-//            HStack {
-//                Text("Acessibility Mode")
-//                    .fontWeight(.bold)
-//                Image(systemName: "accessibility.fill")
-//                    .foregroundStyle(.blue)
-//            }
-//            .font(.title3)
-//            
-//            Text("This mode is designed for users with ocular prosthetics, a lazy eye (strabismus), or any condition where one eye does not move or close in sync with the other.")
-//                .font(.subheadline)
-//        }
-//        VStack(alignment: .leading, spacing: 14) {
-//            HStack {
-//                Text("Day and Night Mode")
-//                    .fontWeight(.bold)
-//                Image(systemName: "sun.max")
-//                    .frame(width: 20)
-//                    .foregroundStyle(.orange)
-//                Image(systemName: "moon.fill")
-//                    .frame(width: 20)
-//                    .foregroundStyle(.indigo)
-//            }
-//            .font(.title3)
-//            
-//            VStack(alignment: .leading, spacing: 4) {
-//                Text("Day Mode")
-//                    .font(.headline)
-//                Text("Optimized for daylight. It uses high-efficiency computer vision to preserve battery life.")
-//                    .font(.subheadline)
-//            }
-//            VStack(alignment: .leading, spacing: 4) {
-//                Text("Night Mode")
-//                    .font(.headline)
-//                Text("Powered by infrared sensors, this mode outperforms Day Mode in low-light settings, but it still requires some ambient light to track facial geometry.")
-//                    .font(.subheadline)
-//            }
-//        }
-//    }
-//    
-//}
-//.padding(.horizontal)
-
-

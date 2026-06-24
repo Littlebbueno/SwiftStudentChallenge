@@ -1,6 +1,6 @@
 //
-//  AttentionView.swift
-//  Toxapex
+//  AttentionVisionView.swift
+//  RoadHelper
 //
 //  Created by Marco Bueno on 29/12/25.
 //
@@ -76,10 +76,6 @@ struct AttentionVisionView: View {
                         circleAlert(number: "2")
                             .scaleEffect(closedFramesCounter >= 20 ? 1.0 : 0.5)
                             .opacity(closedFramesCounter >= 20 ? 1.0 : 0.0)
-                        
-//                        circleAlert(number: "3")
-//                            .scaleEffect(closedFramesCounter >= 30 ? 1.0 : 0.5)
-//                            .opacity(closedFramesCounter >= 30 ? 1.0 : 0.0)
                     }
                     .animation(.interpolatingSpring(stiffness: 100, damping: 10), value: closedFramesCounter)
                     .offset(y: -40)
@@ -93,7 +89,6 @@ struct AttentionVisionView: View {
                             self.playing = false
                         }
                         self.isDrowsy = false
-            //            self.synthesizer.stopSpeaking(at: .immediate)
                         audioPlayer.player?.stop()
                         Task {
                             try? await Task.sleep(nanoseconds: 200_000_000)
@@ -178,66 +173,7 @@ struct AttentionVisionView: View {
         .navigationTitle("Attention Assistant")
         .navigationBarTitleDisplayMode(.inline)
     }
-    
-    var buttonPlayAssistant: some View {
-        Button{
-            if checkCameraPermission() {
-                withAnimation {
-                    self.assistActive = true
-                    self.previewCameraActive = true
-                    self.playing = true
-                }
-            }
-            else {
-                self.showAlertCamera = true
-            }
-        }label:{
-            HStack {
-                Image(systemName:"play.fill")
-                    .foregroundStyle(.black)
-                Text("Start Assistant")
-                    .padding(6)
-                    .foregroundStyle(Color.black)
-                    .fontWeight(.semibold)
-            }
-            .dynamicTypeSize(...DynamicTypeSize.xLarge)
-            .frame(maxWidth: .infinity)
 
-        }
-        .tint(.white)
-        .clipShape(.capsule)
-        .modifier(
-            ConditionalButtonModifierProminent()
-        )
-    }
-    
-    var buttonCloseAssistant: some View {
-        Button {
-            withAnimation {
-                self.assistActive = false
-                self.previewCameraActive = false
-                self.playing = false
-            }
-            self.isDrowsy = false
-//            self.synthesizer.stopSpeaking(at: .immediate)
-            audioPlayer.player?.stop()
-            Task {
-                try? await Task.sleep(nanoseconds: 200_000_000)
-                self.eyeTracker.eyeStatus = .nofaceDetected
-            }
-        }label:{
-            HStack {
-                Image(systemName: "square.fill")
-                Text("Close Assistant")
-                    .font(.headline)
-            }
-            .dynamicTypeSize(...DynamicTypeSize.xLarge)
-            .foregroundColor(Color("AlertColor"))
-            .frame(maxWidth: .infinity)
-
-        }
-    }
-    
     func checkCameraPermission() -> Bool{
         let status = AVCaptureDevice.authorizationStatus(for: .video)
         

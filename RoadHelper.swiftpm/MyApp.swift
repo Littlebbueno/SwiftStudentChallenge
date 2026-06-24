@@ -21,7 +21,6 @@ struct MyApp: App {
                 TabView {
                     NavigationStack {
                         TravelView(immediateEmergencies: emergencyManager.immediateEmergencies, roadWeatherEmergencies: emergencyManager.roadWeatherEmergencies, vehicleEmergencies: emergencyManager.vehicleEmergencies)
-                        //                            .preferredColorScheme(ColorScheme.dark)
                     }
                     .tabItem {
                         Label("Emergencies", systemImage: "light.beacon.max.fill")

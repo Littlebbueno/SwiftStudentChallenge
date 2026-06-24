@@ -1,6 +1,6 @@
 //
 //  PreviewAR.swift
-//  Toxapex
+//  RoadHelper
 //
 //  Created by Marco Bueno on 02/02/26.
 //
@@ -15,19 +15,6 @@ struct ARCameraView: UIViewRepresentable {
     func makeUIView(context: Context) -> ARView {
         let arView = ARView(frame: .zero)
         arView.session = session
-
-//        let faceAnchor = AnchorEntity(.face)
-//        
-//
-//        let material = SimpleMaterial(color: .blue.withAlphaComponent(0.2), isMetallic: true)
-//        
-//
-//        let faceEntity = ModelEntity(mesh: .generateSphere(radius: 0.1), materials: [material])
-//        faceEntity.name = "faceMesh"
-//        
-//        faceAnchor.addChild(faceEntity)
-//        arView.scene.addAnchor(faceAnchor)
-        
         return arView
     }
 

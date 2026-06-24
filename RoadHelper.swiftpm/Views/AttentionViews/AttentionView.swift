@@ -1,6 +1,6 @@
 //
 //  AttentionView.swift
-//  Toxapex
+//  RoadHelper
 //
 //  Created by Marco Bueno on 02/02/26.
 //
@@ -13,10 +13,8 @@ struct AttentionView: View {
     
     let cornerRadiusButtons: CGFloat = 24
 
-    @State var editedMode: Bool = false
-    // false == Vision, true == ARKit
     @Environment(\.colorScheme) var colorScheme
-    
+
     // false = Vision, true = ARKit
     @AppStorage("assistantModel") var attentionMode: Bool = false
     
@@ -115,7 +113,6 @@ struct AttentionView: View {
             }
         }
         .dynamicTypeSize(...DynamicTypeSize.accessibility2)
-//        .animation(.easeInOut(duration: 0.05), value: self.eyeTrackerToCheck)
         .onAppear {
             UIApplication.shared.isIdleTimerDisabled = true
         }
@@ -140,7 +137,6 @@ struct AttentionView: View {
             }
         }
         .onChange(of: self.showAcessibilitySheet) { older, _ in
-            print("deu certo 1")
             self.eyeTracker.reloadSettings()
             self.eyeTrackerVision.reloadSettings()
         }
@@ -206,7 +202,6 @@ struct AttentionView: View {
             ZStack {
                 RoundedRectangle(cornerRadius: 16)
                     .fill(.ultraThinMaterial)
-//                    .environment(\.colorScheme, .dark)
                 RoundedRectangle(cornerRadius: 16)
                     .foregroundStyle(Color("CinzaCards").opacity(colorScheme == .light ? 0.4: 0.0))
             }
@@ -324,7 +319,7 @@ struct AttentionView: View {
             )
             try AVAudioSession.sharedInstance().setActive(true)
         } catch {
-            print("Erro ao configurar áudio: \(error)")
+            print("Audio session setup failed: \(error)")
         }
     }
 }
@@ -332,6 +327,5 @@ struct AttentionView: View {
 #Preview {
     NavigationStack {
         AttentionView()
-//            .preferredColorScheme(.dark)
     }
 }
