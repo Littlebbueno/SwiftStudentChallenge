@@ -17,7 +17,7 @@ struct AttentionVisionView: View {
 
     // Timer variaveis
     let timer = Timer.publish(every: 0.1, on: .main, in: .common).autoconnect()
-    @State private var closedFramesCounter: Int = 0
+    @Binding var closedFramesCounter: Int
     @State private var isDrowsy: Bool = false
     
     //
@@ -68,19 +68,8 @@ struct AttentionVisionView: View {
                             ConditionalButtonModifierProminent()
                         )
                     }
-                    ZStack {
-                        circleAlert(number: "1")
-                            .scaleEffect(closedFramesCounter >= 10 ? 1.0 : 0.5)
-                            .opacity(closedFramesCounter >= 10 ? 1.0 : 0.0)
-                        
-                        circleAlert(number: "2")
-                            .scaleEffect(closedFramesCounter >= 20 ? 1.0 : 0.5)
-                            .opacity(closedFramesCounter >= 20 ? 1.0 : 0.0)
-                    }
-                    .animation(.interpolatingSpring(stiffness: 100, damping: 10), value: closedFramesCounter)
-                    .offset(y: -40)
                 }
-                .padding(.bottom, 100)
+                .padding(.bottom, 80)
                 if self.assistActive {
                     ButtonClose(action: {
                         withAnimation {

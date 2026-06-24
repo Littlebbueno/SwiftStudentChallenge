@@ -26,6 +26,8 @@ struct AttentionView: View {
     let impact = UIImpactFeedbackGenerator(style: .light)
     
     @State var playing: Bool = false
+    // Shared drowsiness counter (0...20), updated by the active backend, drives the ring.
+    @State private var closedFramesCounter: Int = 0
     @AppStorage("firstOnboarding") var firstOnboarding: Bool = true
     
     // false = off, true = on
@@ -67,17 +69,18 @@ struct AttentionView: View {
             )
             .ignoresSafeArea()
             VStack(spacing: 16) {
+                badges
                 statusIndicator
                 informativePart
                 Spacer()
             }
             .padding(.top, 15)
             .padding(.horizontal)
-            
+
             if attentionMode && !firstOnboarding {
-                AttentionARKitView(eyeTracker: self.eyeTracker, playing: self.$playing, audioPlayer: audioPlayer)
+                AttentionARKitView(eyeTracker: self.eyeTracker, playing: self.$playing, closedFramesCounter: self.$closedFramesCounter, audioPlayer: audioPlayer)
             }else if !firstOnboarding{
-                AttentionVisionView(eyeTracker: self.eyeTrackerVision, playing: self.$playing, audioPlayer: audioPlayer)
+                AttentionVisionView(eyeTracker: self.eyeTrackerVision, playing: self.$playing, closedFramesCounter: self.$closedFramesCounter, audioPlayer: audioPlayer)
             }
             VStack() {
                 Spacer()
@@ -169,8 +172,8 @@ struct AttentionView: View {
                     Text("NO FACE DETECTED")
                         .font(.system(size: 24, weight: .bold))
                         .foregroundColor(Color("NoFaceDetected2"))
-                    
-                    Text("For best results, securely mount your phone and keep your face centered. Ensure there is adequate lighting for face detection.")
+
+                    Text("Center your face and check the lighting.")
                         .dynamicTypeSize(...DynamicTypeSize.xxLarge)
                         .font(.caption)
                         .fontWeight(.medium)
@@ -210,39 +213,80 @@ struct AttentionView: View {
     }
     
     var statusIndicator: some View {
-        VStack {
-            if self.playing {
-                if eyeTrackerToCheck == .nofaceDetected {
-                    Circle()
-                        .foregroundStyle(Color("NoFaceDetected").gradient)
-                        .frame(width: 115, height: 115)
-                        .overlay(
-                            Image(systemName: "questionmark.circle")
-                                .foregroundColor(.white)
-                                .font(.system(size: 50))
-                        )
-                }else {
-                    Circle()
-                        .foregroundStyle((eyeTrackerToCheck == .closed ? Color.red : Color("OpenEyes")).gradient)
-                        .frame(width: 115, height: 115)
-                        .overlay(
-                            Image(systemName: eyeTrackerToCheck == .closed ? "xmark.circle" : "checkmark.circle")
-                                .foregroundColor(.white)
-                                .font(.system(size: 50))
-                        )
+        ZStack {
+            Circle()
+                .stroke(Color.white.opacity(0.15), lineWidth: 12)
+            if playing {
+                Circle()
+                    .trim(from: 0, to: ringFraction)
+                    .stroke(stateColor.gradient,
+                            style: StrokeStyle(lineWidth: 12, lineCap: .round))
+                    .rotationEffect(.degrees(-90))
+                    .animation(.easeInOut(duration: 0.2), value: ringFraction)
+            }
+            Image(systemName: stateIcon)
+                .font(.system(size: 50))
+                .foregroundStyle(stateColor)
+                .contentTransition(.symbolEffect(.replace))
+        }
+        .frame(width: 130, height: 130)
+        .scaleEffect(isAlarming ? 1.04 : 1.0)
+        .animation(isAlarming ? .easeInOut(duration: 0.5).repeatForever(autoreverses: true) : .default,
+                   value: isAlarming)
+        .environment(\.colorScheme, .dark)
+    }
+
+    var badges: some View {
+        HStack(spacing: 8) {
+            if playing {
+                badge(icon: attentionMode ? "moon.stars.fill" : "sun.max.fill",
+                      text: attentionMode ? "Night Mode" : "Day Mode",
+                      tint: attentionMode ? Color("NightColor") : Color("DayColor"))
+                if acessibilityActivated {
+                    badge(icon: "accessibility", text: "Single eye", tint: Color("AccessibilityColor"))
                 }
             }
-            else {
-                Circle()
-                    .foregroundStyle(Color("AttentionOffColor").gradient)
-                    .frame(width: 115, height: 115)
-                    .overlay(
-                        Image(systemName: "face.dashed")
-                            .foregroundColor(.white)
-                            .font(.system(size: 50))
-                    )
-                
-            }
+            Spacer()
+        }
+        .frame(height: 32)
+        .environment(\.colorScheme, .dark)
+    }
+
+    func badge(icon: String, text: String, tint: Color) -> some View {
+        HStack(spacing: 6) {
+            Image(systemName: icon)
+                .foregroundStyle(tint)
+            Text(text)
+                .font(.footnote.weight(.medium))
+                .foregroundStyle(.white)
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .background(.ultraThinMaterial, in: Capsule())
+    }
+
+    private var ringFraction: CGFloat {
+        playing ? CGFloat(min(20, closedFramesCounter)) / 20 : 0
+    }
+
+    private var isAlarming: Bool { playing && closedFramesCounter >= 20 }
+
+    /// State color for the ring + icon (bright variants over the photo).
+    private var stateColor: Color {
+        guard playing else { return Color("AttentionOffColor2") }
+        switch eyeTrackerToCheck {
+        case .opened: return Color("OpenEyes2")
+        case .closed: return Color("AlertColor")
+        case .nofaceDetected: return Color("NoFaceDetected2")
+        }
+    }
+
+    private var stateIcon: String {
+        guard playing else { return "face.dashed" }
+        switch eyeTrackerToCheck {
+        case .opened: return closedFramesCounter >= 20 ? "exclamationmark.triangle.fill" : "eye.fill"
+        case .closed: return "eye.slash.fill"
+        case .nofaceDetected: return "questionmark"
         }
     }
     
