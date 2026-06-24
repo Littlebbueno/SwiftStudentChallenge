@@ -6,14 +6,13 @@
 ## What this is
 
 **RoadHelper** is an iOS app that helps people stay safer on the road. It was the
-author's submission for the **Swift Student Challenge 2026** (not selected). The
-goal now is to turn it into a clean, well-documented **open-source** project and,
-in a later phase, prepare it for the **App Store**.
+author's submission for the **Swift Student Challenge 2026**. The
+goal now is to turn it into a clean, well-documented **open-source** project.
 
 Three pillars:
 1. **Emergency guides** — step-by-step guides for road emergencies (PHTLS trauma
    protocol, CPR, vehicle fire, animal hit, moving a victim safely, flat tire,
-   overheating, disabled vehicle).
+   overheating, disabled vehicle, and maybe others).
 2. **Emergency contacts** — Brazilian emergency numbers (190/191/192/193) plus
    user-added personal contacts (persisted with SwiftData).
 3. **Attention Assistant** — a drowsiness detector for drivers. Monitors the
@@ -27,8 +26,7 @@ Three pillars:
   via `.iOSApplication` (`AppleProductTypes`).
 - **iOS 18+**, Swift 6 language mode.
 - **Decision:** stay on `.swiftpm` for the open-source phase. Migrating to a
-  normal Xcode project is the first step of the future App Store phase (needed
-  for CarPlay/Siri/Widgets/test targets/privacy manifest/TestFlight). All code
+  normal Xcode project is the first step of the future. All code
   and localization work transfers without rework.
 
 ## Tech stack
@@ -113,30 +111,40 @@ xcodebuild -scheme RoadHelper \
   drowsiness-while-driving claims → require disclaimers, privacy policy, and a
   privacy manifest (uses `UserDefaults`, a required-reason API).
 
-## Roadmap (see the planning doc for detail)
+## Roadmap
 
 1. ✅ **Repo cleanup** — removed committed zip/`.DS_Store`/xcuserstate, expanded
    `.gitignore`, deleted dead placeholder views, standardized file headers,
    removed dead/commented code & debug prints.
-2. ⏳ **Code refactors** — models `class`→`struct`; consolidate the 6 overlapping
-   `EmergencyStep` inits; replace index-based navigation in `TravelView` with
-   id-based lookup; rename `eyeStatus`→`EyeStatus`, `navigationPath`→`EmergencyRoute`;
-   fix `acessibility`→`accessibility` spelling; move Vision processing off the
-   main thread; rename bundle id `com.marco.Toxapex`.
-3. **Localization** pt-BR + en (UI, then content).
-4. **Checkpoint** — discuss/improve the Attention Assistant algorithm
-   (EAR threshold vs. calibration, PERCLOS, false positives, perf).
-5. **README + LICENSE (MIT).**
+2. ⏳ **Review the Attention tab flow & design** — rework the UX/visual design of
+   the Attention tab in the TabBar.
+3. **Review the EyeTracker implementation** — especially whether Night Mode
+   really needs the TrueDepth camera (ARKit), and how the two backends compare
+   (also revisit the EAR `0.12` / blink `0.55` thresholds, calibration, PERCLOS,
+   false positives, and moving Vision off the main thread).
+4. **Brainstorm new ideas** — explore new features / directions.
+5. **Localize to pt-BR (UI)** — set pt-BR as the base language + en; UI strings
+   first (emergency content after).
+6. **Review the guides** — improve accuracy and possibly find better sources
+   (with Claude's help).
+7. **Finalize README + LICENSE (MIT).**
+
+> General code refactors (models `class`→`struct`, consolidating the 6
+> `EmergencyStep` inits, id-based navigation in `TravelView`, type renames like
+> `eyeStatus`→`EyeStatus` / `navigationPath`→`EmergencyRoute`, bundle id rename)
+> are tracked under **Known gotchas / tech debt** and folded into the relevant
+> roadmap steps as they're touched.
 
 ## Known gotchas / tech debt
 
 - `TravelView` navigation maps routes to `immediateEmergencies[0..4]` by index —
-  fragile if the array is reordered (fix in phase 2).
+  fragile if the array is reordered (general refactor).
 - `roadWeatherEmergencies` / `filteredRoadWeather` are dead plumbing for an
   unimplemented, empty "Road & Weather" category.
 - Vision `EyeTrackerVision` runs `VNImageRequestHandler.perform` on the main
-  thread (fix in phase 2).
+  thread (address during the EyeTracker review, roadmap step 3).
 - `AttentionVisionView` and `AttentionARKitView` duplicate the drowsiness timer
   logic — candidate for extraction.
 - The Vision EAR threshold (`0.12`) and ARKit blink threshold (`0.55`) are fixed
-  constants; robustness to be revisited at the checkpoint.
+  constants; robustness to be revisited during the EyeTracker review (roadmap
+  step 3).
